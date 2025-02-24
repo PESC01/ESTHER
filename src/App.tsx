@@ -85,7 +85,7 @@ function App() {
               <Menu className="w-6 h-6" />
             </button>
             
-            <h1 className="text-2xl font-light tracking-widest">ESTHER</h1>
+            <h1 className="text-2xl font-script tracking-widest flex-grow text-center">ESTHER</h1>
             
             <button
               onClick={() => setSelectedGender(null)}
