@@ -12,7 +12,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({ item, onClose }) => 
   const imageUrl = useImageUrl(item.image_url);
 
   // Construye el mensaje con encodeURIComponent
-  const message = encodeURIComponent(`Hola! Quisiera realizar un pedido de ${item.name} con un precio de $${item.price.toFixed(2)}. Gracias!`);
+  const message = encodeURIComponent(`Hola! Quisiera realizar un pedido de ${item.name} con un precio de $${item.price.toFixed(2)}. Graciass!`);
   // Construye la URL completa
   const whatsappLink = `https://wa.me/61671615?text=${message}`;
 
