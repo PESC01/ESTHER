@@ -90,7 +90,7 @@ function App() {
             
             <button
               onClick={() => setSelectedGender(null)}
-              className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors"
+              className={`bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors ${isMenuOpen ? 'mt-20' : ''}`}
             >
               Cambiar Sección
             </button>
