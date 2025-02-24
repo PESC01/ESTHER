@@ -61,7 +61,7 @@ function App() {
     return (
       <div className="min-h-screen bg-white">
         <header className="fixed top-0 left-0 right-0 z-50 bg-white p-6">
-          <h1 className="text-4xl text-center font-light tracking-widest">ESTHER</h1>
+          <h1 className="text-6xl text-center font-light tracking-widest" style={{ fontFamily: 'Playfair Display, serif', letterSpacing: '-9px' }}>ESTHER</h1>
         </header>
         <GenderSelection onSelect={setSelectedGender} />
       </div>
@@ -84,12 +84,13 @@ function App() {
             >
               <Menu className="w-6 h-6" />
             </button>
-            
-            <h1 className="text-2xl font-script tracking-widest flex-grow text-center">ESTHER</h1>
+            <div className="flex-grow text-center">
+            <h1 className="text-6xl text-center font-light tracking-widest" style={{ fontFamily: 'Playfair Display, serif', letterSpacing: '-9px' }}>ESTHER</h1>
+            </div>
             
             <button
               onClick={() => setSelectedGender(null)}
-              className="text-sm hover:underline"
+                className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors"
             >
               Cambiar Sección
             </button>
