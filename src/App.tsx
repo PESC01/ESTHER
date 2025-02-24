@@ -90,7 +90,7 @@ function App() {
             
             <button
               onClick={() => setSelectedGender(null)}
-              className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors"
+              className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors my-2"
             >
               Cambiar Sección
             </button>
@@ -98,7 +98,7 @@ function App() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 my-4">
         <div className="flex flex-col md:flex-row gap-8">
           <aside className={`md:w-64 ${isMenuOpen ? 'block' : 'hidden'} md:block`}>
             <nav className="space-y-1">
