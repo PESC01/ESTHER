@@ -11,6 +11,11 @@ interface ProductModalProps {
 export const ProductModal: React.FC<ProductModalProps> = ({ item, onClose }) => {
   const imageUrl = useImageUrl(item.image_url);
 
+  // Construye el mensaje con encodeURIComponent
+  const message = encodeURIComponent(`Hola! Quisiera realizar un pedido de ${item.name} con un precio de $${item.price.toFixed(2)}. Gracias!`);
+  // Construye la URL completa
+  const whatsappLink = `https://wa.me/61671615?text=${message}`;
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white max-w-2xl w-full rounded-lg overflow-hidden relative">
@@ -36,15 +41,15 @@ export const ProductModal: React.FC<ProductModalProps> = ({ item, onClose }) => 
             <p className="text-gray-600 mb-6">{item.description}</p>
             
       
-<a
-  href={`https://wa.me/61671615?text=Hola!%20Quisiera%20realizar%20un%20pedido%20de%20${item.name}%20con%20un%20precio%20de%20%24${item.price.toFixed(2)}.%20Gracias!`}
-  target="_blank"
-  rel="noopener noreferrer"
-  className="inline-flex items-center gap-2 bg-black text-white px-6 py-3 rounded-md hover:bg-gray-800 transition-colors"
->
-  <Phone className="w-5 h-5" />
-  Realizar Pedido
-</a>
+            <a
+              href={whatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-black text-white px-6 py-3 rounded-md hover:bg-gray-800 transition-colors"
+            >
+              <Phone className="w-5 h-5" />
+              Realizar Pedido
+            </a>
 
           </div>
         </div>
