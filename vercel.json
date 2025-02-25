@@ -1,9 +1,0 @@
-{
-    "rewrites": [
-      { "source": "/admin", "destination": "/" }
-    ],
-    "routes": [
-      { "src": "/admin", "dest": "/" },
-      { "src": "/", "dest": "/" }
-    ]
-  }
