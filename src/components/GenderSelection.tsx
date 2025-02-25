@@ -9,8 +9,8 @@ interface GenderSelectionProps {
 
 export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) => {
   const [images, setImages] = useState<Record<Gender, string>>({
-    women: 'https://images.unsplash.com/photo-1589465885857-44edb59bbff2',
-    men: 'https://images.unsplash.com/photo-1492447273231-0f8fecec1e3a'
+    women: '',
+    men: ''
   });
 
   const womenImageUrl = useImageUrl(images.women);
@@ -30,7 +30,7 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
         const newImages = { ...images };
         data.forEach(item => {
           if (item.image_url) {
-            newImages[item.gender] = item.image_url;
+            newImages[item.gender as Gender] = item.image_url;
           }
         });
         setImages(newImages);
@@ -50,7 +50,8 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
         <img 
           src={womenImageUrl}
           alt="Women's Collection"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain" // Cambiado a object-contain
+          style={{maxWidth: '100%', maxHeight: '100%'}} // Añadido estilos en línea
         />
         <div className="absolute inset-0 flex items-center justify-center">
           <h2 className="text-2xl sm:text-4xl md:text-6xl text-white font-light tracking-wider">MUJER</h2>
@@ -65,7 +66,8 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
         <img 
           src={menImageUrl}
           alt="Men's Collection"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain" // Cambiado a object-contain
+          style={{maxWidth: '100%', maxHeight: '100%'}} // Añadido estilos en línea
         />
         <div className="absolute inset-0 flex items-center justify-center">
           <h2 className="text-2xl sm:text-4xl md:text-6xl text-white font-light tracking-wider">HOMBRE</h2>
