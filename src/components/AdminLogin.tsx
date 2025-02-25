@@ -40,7 +40,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
             ESTHER
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Admin Panel
+            Panel del Administrador
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -52,7 +52,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="email-address" className="sr-only">
-                Email address
+                dirección de correo electrónico
               </label>
               <input
                 id="email-address"
@@ -63,12 +63,12 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm"
-                placeholder="Email address"
+                placeholder="Correo electrónico"
               />
             </div>
             <div>
               <label htmlFor="password" className="sr-only">
-                Password
+                Contraseña
               </label>
               <input
                 id="password"
@@ -79,7 +79,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm"
-                placeholder="Password"
+                placeholder="Contraseña"
               />
             </div>
           </div>

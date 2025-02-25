@@ -262,7 +262,7 @@ export const AdminPanel: React.FC = () => {
             className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-900"
           >
             <LogOut className="w-4 h-4" />
-            Logout
+            Cerrar sesión
           </button>
         </div>
 
@@ -271,31 +271,31 @@ export const AdminPanel: React.FC = () => {
             onClick={() => setActiveTab('categories')}
             className={`px-4 py-2 ${activeTab === 'categories' ? 'border-b-2 border-black' : ''}`}
           >
-            Categories
+            Categorias
           </button>
           <button
             onClick={() => setActiveTab('products')}
             className={`px-4 py-2 ${activeTab === 'products' ? 'border-b-2 border-black' : ''}`}
           >
-            Products
+            Productos
           </button>
           <button
             onClick={() => setActiveTab('sections')}
             className={`px-4 py-2 ${activeTab === 'sections' ? 'border-b-2 border-black' : ''}`}
           >
-            Section Images
+            Selección de imagenes
           </button>
         </div>
 
         {activeTab === 'categories' && (
           <section className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-medium mb-4">Categories</h2>
+            <h2 className="text-xl font-medium mb-4">Categorias</h2>
             <form onSubmit={addCategory} className="flex gap-4 mb-4">
               <input
                 type="text"
                 value={newCategory.name}
                 onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
-                placeholder="New category name"
+                placeholder="Nuevo Categoria"
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
               />
               <select
@@ -303,15 +303,15 @@ export const AdminPanel: React.FC = () => {
                 onChange={(e) => setNewCategory({ ...newCategory, gender: e.target.value as Gender })}
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
               >
-                <option value="women">Women</option>
-                <option value="men">Men</option>
+                <option value="women">Mujer</option>
+                <option value="men">Hombre</option>
               </select>
               <button
                 type="submit"
                 className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800"
               >
                 <Plus className="w-4 h-4" />
-                Add
+                Agregar
               </button>
             </form>
             <ul className="divide-y divide-gray-200">
@@ -335,13 +335,13 @@ export const AdminPanel: React.FC = () => {
 
         {activeTab === 'products' && (
           <section className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-medium mb-4">Products</h2>
+            <h2 className="text-xl font-medium mb-4">Productos</h2>
             
             <form onSubmit={editingProduct ? updateProduct : addProduct} className="mb-8 grid grid-cols-1 gap-4">
               <div className="grid grid-cols-2 gap-4">
                 <input
                   type="text"
-                  placeholder="Product name"
+                  placeholder="Nombre del producto"
                   value={editingProduct?.name || newProduct.name}
                   onChange={(e) => editingProduct 
                     ? setEditingProduct({...editingProduct, name: e.target.value})
@@ -351,7 +351,7 @@ export const AdminPanel: React.FC = () => {
                 />
                 <input
                   type="number"
-                  placeholder="Price"
+                  placeholder="Precio"
                   value={editingProduct?.price || newProduct.price || ''}
                   onChange={(e) => {
                     const value = e.target.value === '' ? 0 : parseFloat(e.target.value);
@@ -365,7 +365,7 @@ export const AdminPanel: React.FC = () => {
                 />
               </div>
               <textarea
-                placeholder="Description"
+                placeholder="Descripción"
                 value={editingProduct?.description || newProduct.description}
                 onChange={(e) => editingProduct
                   ? setEditingProduct({...editingProduct, description: e.target.value})
@@ -375,7 +375,7 @@ export const AdminPanel: React.FC = () => {
               />
               <input
                 type="text"
-                placeholder="Image URL"
+                placeholder="URL de la imagen"
                 value={editingProduct?.image_url || newProduct.image_url}
                 onChange={(e) => editingProduct
                   ? setEditingProduct({...editingProduct, image_url: e.target.value})
@@ -392,7 +392,7 @@ export const AdminPanel: React.FC = () => {
                   }
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
                 >
-                  <option value="">Select Category</option>
+                  <option value="">seleccione Categoria</option>
                   {categories.map(category => (
                     <option key={category.id} value={category.id}>{category.name} ({category.gender})</option>
                   ))}
@@ -405,8 +405,8 @@ export const AdminPanel: React.FC = () => {
                   }
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
                 >
-                  <option value="women">Women</option>
-                  <option value="men">Men</option>
+                  <option value="women">Mujer</option>
+                  <option value="men">Hombre</option>
                 </select>
               </div>
               <div className="flex justify-end gap-4">
@@ -417,7 +417,7 @@ export const AdminPanel: React.FC = () => {
                     className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
                   >
                     <X className="w-4 h-4" />
-                    Cancel
+                    Cancelar
                   </button>
                 )}
                 <button
@@ -427,12 +427,12 @@ export const AdminPanel: React.FC = () => {
                   {editingProduct ? (
                     <>
                       <Save className="w-4 h-4" />
-                      Update
+                      Actualizar
                     </>
                   ) : (
                     <>
                       <Plus className="w-4 h-4" />
-                      Add
+                      Agregar
                     </>
                   )}
                 </button>
@@ -444,22 +444,22 @@ export const AdminPanel: React.FC = () => {
                 <thead>
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Image
+                      Imagen
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Name
+                      Nombre
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Price
+                      Precio
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Category
+                      Categoria
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Gender
+                      Género
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
+                      Acciones
                     </th>
                   </tr>
                 </thead>
