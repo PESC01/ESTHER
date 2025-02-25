@@ -61,7 +61,7 @@ function App() {
     return (
       <div className="min-h-screen bg-white">
         <header className="fixed top-0 left-0 right-0 z-50 bg-white p-6">
-          <h1 className="text-6xl text-center font-light tracking-widest" style={{ fontFamily: 'Playfair Display, serif', letterSpacing: '-9px' }}>ESTHER</h1>
+        <img src="/Esther.PNG" alt="Esther Logo" className="h-12 mx-auto" />
         </header>
         <GenderSelection onSelect={setSelectedGender} />
       </div>
@@ -78,14 +78,14 @@ function App() {
       <header className="sticky top-0 z-40 bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:flex-nowrap flex-wrap">
-            <button
+        <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 hover:bg-gray-100 rounded-md md:hidden"
             >
               <Menu className="w-6 h-6" />
-            </button>
+              </button>
             <div className="flex-grow text-center">
-            <h1 className="text-6xl text-center font-light tracking-widest" style={{ fontFamily: 'Playfair Display, serif', letterSpacing: '-9px' }}>ESTHER</h1>
+            <img src="/Esther.PNG" alt="Esther Logo" className="h-12 mx-auto" />
             </div>
             
             <button
