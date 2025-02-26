@@ -8,7 +8,7 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick }) => {
-  const imageUrl = useImageUrl(item.image_url);
+  const mainImageUrl = useImageUrl(item.image_urls[0] || '');
 
   return (
     <div 
@@ -17,7 +17,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick }) => {
     >
       <div className="aspect-square overflow-hidden bg-gray-100">
         <img 
-          src={imageUrl}
+          src={mainImageUrl}
           alt={item.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />

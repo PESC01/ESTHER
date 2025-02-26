@@ -14,14 +14,39 @@ interface ProductRowProps {
 }
 
 const ProductRow: React.FC<ProductRowProps> = ({ product, categories, setEditingProduct, deleteProduct }) => {
+  // Asegúrate de que product.image_urls sea siempre un array
+  const imageUrls = product.image_urls || [];
+  
+  // Usar un hook por cada posible URL (con un máximo fijo)
+  // Esto evita el error de "rendered fewer hooks than expected"
+  const maxImages = 5; // Define un máximo razonable de imágenes
+  
+  // Crear un array de URLs resueltas
+  const imageUrlsResolved: string[] = [];
+  
+  // Procesar cada URL hasta el máximo
+  for (let i = 0; i < maxImages; i++) {
+    // Usar el hook para cada posición potencial
+    const url = i < imageUrls.length ? imageUrls[i] : '';
+    const resolvedUrl = useImageUrl(url);
+    
+    // Solo agregar URLs válidas al array resultante
+    if (i < imageUrls.length) {
+      imageUrlsResolved.push(resolvedUrl);
+    }
+  }
+
   return (
     <tr>
       <td className="px-6 py-4 whitespace-nowrap">
-        <img
-          src={useImageUrl(product.image_url)}
-          alt={product.name}
-          className="h-12 w-12 object-cover rounded"
-        />
+        {imageUrlsResolved.map((imageUrl, index) => (
+          <img
+            key={index}
+            src={imageUrl}
+            alt={`${product.name} - ${index + 1}`}
+            className="h-12 w-12 object-cover rounded mr-2"
+          />
+        ))}
       </td>
       <td className="px-6 py-4 whitespace-nowrap">{product.name}</td>
       <td className="px-6 py-4 whitespace-nowrap">${product.price.toFixed(2)}</td>
@@ -92,7 +117,7 @@ export const AdminPanel: React.FC = () => {
     name: '',
     price: 0,
     description: '',
-    image_url: '',
+    image_urls: [], // Cambiado a un array de strings
     category_id: '',
     gender: 'women'
   });
@@ -101,32 +126,53 @@ export const AdminPanel: React.FC = () => {
     men: '',
   });
 
+  // Estado local para manejar las URLs de las imágenes del nuevo producto
+  const [newImageUrls, setNewImageUrls] = useState<string[]>([]);
+  // Estado local para manejar las URLs de las imágenes del producto en edición
+  const [editingImageUrls, setEditingImageUrls] = useState<string[]>([]);
+
   useEffect(() => {
     loadData();
   }, []);
 
-  const loadData = async () => {
-    try {
-      const [
-        { data: categoriesData },
-        { data: productsData },
-        { data: sectionImagesData }
-      ] = await Promise.all([
-        supabase.from('categories').select('*').order('name'),
-        supabase.from('products').select('*').order('name'),
-        supabase.from('section_images').select('*')
-      ]);
-
-      setCategories(categoriesData || []);
-      setProducts(productsData || []);
-      setSectionImages(sectionImagesData || []);
-
-    } catch (error) {
-      console.error('Error loading data:', error);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    // Cuando se selecciona un producto para editar, actualiza las URLs de las imágenes en el estado local
+    if (editingProduct) {
+      setEditingImageUrls(editingProduct.image_urls || []);
+    } else {
+      setEditingImageUrls([]);
     }
-  };
+  }, [editingProduct]);
+
+// filepath: src/components/AdminPanel.tsx
+const loadData = async () => {
+  try {
+    const [
+      { data: categoriesData },
+      { data: productsData },
+      { data: sectionImagesData }
+    ] = await Promise.all([
+      supabase.from('categories').select('*').order('name'),
+      supabase.from('products').select('*').order('name'),
+      supabase.from('section_images').select('*')
+    ]);
+
+    // Asegúrate de que image_urls sea un array en todos los productos
+    const productsWithImageUrls = productsData?.map(product => ({
+      ...product,
+      image_urls: product.image_urls || [], // Ensure image_urls is always an array
+    })) || [];
+
+    setCategories(categoriesData || []);
+    setProducts(productsWithImageUrls);
+    setSectionImages(sectionImagesData || []);
+
+  } catch (error) {
+    console.error('Error loading data:', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -167,19 +213,26 @@ export const AdminPanel: React.FC = () => {
   const addProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // Combina las URLs de las imágenes del estado local con el nuevo producto
+      const productToInsert = {
+        ...newProduct,
+        image_urls: newImageUrls,
+      };
+
       const { error } = await supabase
         .from('products')
-        .insert([newProduct]);
+        .insert([productToInsert]);
 
       if (error) throw error;
       setNewProduct({
         name: '',
         price: 0,
         description: '',
-        image_url: '',
+        image_urls: [],
         category_id: '',
         gender: 'women'
       });
+      setNewImageUrls([]); // Limpia las URLs de las imágenes después de agregar el producto
       loadData();
     } catch (error) {
       console.error('Error adding product:', error);
@@ -191,9 +244,15 @@ export const AdminPanel: React.FC = () => {
     if (!editingProduct?.id) return;
 
     try {
+      // Combina las URLs de las imágenes del estado local con el producto en edición
+      const productToUpdate = {
+        ...editingProduct,
+        image_urls: editingImageUrls,
+      };
+
       const { error } = await supabase
         .from('products')
-        .update(editingProduct)
+        .update(productToUpdate)
         .eq('id', editingProduct.id);
 
       if (error) throw error;
@@ -241,6 +300,42 @@ export const AdminPanel: React.FC = () => {
     } catch (error) {
       console.error('Error updating section image:', error);
     }
+  };
+
+  // Función para agregar una nueva URL de imagen al estado local (nuevo producto)
+  const handleAddImageUrl = () => {
+    setNewImageUrls([...newImageUrls, '']);
+  };
+
+  // Función para actualizar una URL de imagen en el estado local (nuevo producto)
+  const handleImageUrlChange = (index: number, url: string) => {
+    const updatedImageUrls = [...newImageUrls];
+    updatedImageUrls[index] = url;
+    setNewImageUrls(updatedImageUrls);
+  };
+
+  // Función para eliminar una URL de imagen del estado local (nuevo producto)
+  const handleRemoveImageUrl = (index: number) => {
+    const updatedImageUrls = [...newImageUrls];
+    updatedImageUrls.splice(index, 1);
+    setNewImageUrls(updatedImageUrls);
+  };
+
+  // Funciones para manejar las URLs de las imágenes del producto en edición
+  const handleAddEditingImageUrl = () => {
+    setEditingImageUrls([...editingImageUrls, '']);
+  };
+
+  const handleEditingImageUrlChange = (index: number, url: string) => {
+    const updatedImageUrls = [...editingImageUrls];
+    updatedImageUrls[index] = url;
+    setEditingImageUrls(updatedImageUrls);
+  };
+
+  const handleRemoveEditingImageUrl = (index: number) => {
+    const updatedImageUrls = [...editingImageUrls];
+    updatedImageUrls.splice(index, 1);
+    setEditingImageUrls(updatedImageUrls);
   };
 
   if (loading) {
@@ -373,16 +468,77 @@ export const AdminPanel: React.FC = () => {
                 }
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
               />
-              <input
-                type="text"
-                placeholder="URL de la imagen"
-                value={editingProduct?.image_url || newProduct.image_url}
-                onChange={(e) => editingProduct
-                  ? setEditingProduct({...editingProduct, image_url: e.target.value})
-                  : setNewProduct({...newProduct, image_url: e.target.value})
-                }
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
-              />
+              
+              {/* Campos para agregar URLs de imágenes (nuevo producto) */}
+              {!editingProduct && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    URLs de las imágenes
+                  </label>
+                  {newImageUrls.map((url, index) => (
+                    <div key={index} className="flex gap-2 mb-2">
+                      <input
+                        type="text"
+                        placeholder={`URL de la imagen ${index + 1}`}
+                        value={url}
+                        onChange={(e) => handleImageUrlChange(index, e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImageUrl(index)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={handleAddImageUrl}
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Agregar imagen
+                  </button>
+                </div>
+              )}
+
+              {/* Campos para agregar URLs de imágenes (producto en edición) */}
+              {editingProduct && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    URLs de las imágenes
+                  </label>
+                  {editingImageUrls.map((url, index) => (
+                    <div key={index} className="flex gap-2 mb-2">
+                      <input
+                        type="text"
+                        placeholder={`URL de la imagen ${index + 1}`}
+                        value={url}
+                        onChange={(e) => handleEditingImageUrlChange(index, e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveEditingImageUrl(index)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={handleAddEditingImageUrl}
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Agregar imagen
+                  </button>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 <select
                   value={editingProduct?.category_id || newProduct.category_id}
