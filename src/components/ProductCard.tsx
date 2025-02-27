@@ -24,7 +24,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick }) => {
       </div>
       <div className="mt-4 space-y-1">
         <h3 className="text-lg font-medium">{item.name}</h3>
-        <p className="text-lg">${item.price.toFixed(2)}</p>
+        <p className="text-lg">Bs{item.price.toFixed(2)}</p>
       </div>
     </div>
   );

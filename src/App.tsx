@@ -75,14 +75,11 @@ function App() {
                         <Menu className="w-6 h-6" />
                       </button>
                       <div className="flex-grow text-center">
-                        <img src="/Esther.PNG" alt="Esther Logo" className="h-12 mx-auto" />
+                        <button onClick={() => setSelectedGender(null)}>
+                          <img src="/Esther.PNG" alt="Esther Logo" className="h-12 mx-auto" />
+                        </button>
                       </div>
-                      <button
-                        onClick={() => setSelectedGender(null)}
-                        className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors my-2"
-                      >
-                        Cambiar Sección
-                      </button>
+                      
                     </div>
                   </div>
                 </header>
@@ -97,6 +94,14 @@ function App() {
                           }`}
                         >
                           Todos
+                        </button>
+                        <button
+                          onClick={() => setSelectedGender(null)}
+                          className={`w-full text-left px-3 py-2 rounded-md ${
+                            !selectedCategory ? 'bg-black text-white' : 'hover:bg-gray-100'
+                          }`}
+                        >
+                          Cambiar Sección
                         </button>
                         {filteredCategories.map(category => (
                           <button
