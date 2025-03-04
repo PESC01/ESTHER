@@ -33,18 +33,19 @@ export const ProductModal: React.FC<ProductModalProps> = ({ item, onClose }) => 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50 overflow-y-auto">
       <div className="bg-white w-full max-w-2xl rounded-lg overflow-hidden relative my-2 sm:my-0">
-        {/* Botón de cierre más grande y mejor posicionado */}
+        {/* Botón de cierre mejorado para móviles */}
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 sm:top-4 sm:right-4 p-2 bg-white bg-opacity-80 hover:bg-gray-100 rounded-full z-10 shadow-sm"
+          className="absolute top-2 right-2 sm:top-4 sm:right-4 p-3 sm:p-2 bg-black bg-opacity-70 hover:bg-opacity-100 text-white rounded-full z-50 shadow-lg"
           aria-label="Cerrar"
+          style={{ minWidth: '40px', minHeight: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          <X className="w-5 h-5 sm:w-6 sm:h-6" />
+          <X className="w-6 h-6" />
         </button>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {/* Columna de imágenes */}
-          <div className="flex flex-col gap-2 sm:gap-4 p-4 pt-10 sm:p-6">
+          <div className="flex flex-col gap-2 sm:gap-4 p-4 pt-12 sm:pt-10 sm:p-6">
             <div className="aspect-square w-full">
               <img
                 src={mainImageUrl}
@@ -83,6 +84,17 @@ export const ProductModal: React.FC<ProductModalProps> = ({ item, onClose }) => 
                 <Phone className="w-5 h-5" />
                 Realizar Pedido
               </a>
+            </div>
+
+            {/* Botón adicional para cerrar en la parte inferior (solo en móvil) */}
+            <div className="mt-4 block md:hidden">
+              <button
+                onClick={onClose}
+                className="w-full flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-3 rounded-md hover:bg-gray-100"
+              >
+                <X className="w-4 h-4" />
+                Cerrar
+              </button>
             </div>
           </div>
         </div>
