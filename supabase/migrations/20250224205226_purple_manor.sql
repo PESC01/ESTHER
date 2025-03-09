@@ -1,19 +1,8 @@
-/*
-  # Add gender column to categories table
-
-  1. Changes
-    - Add gender column to categories table
-    - Set default gender for existing records
-    - Add check constraint for valid gender values
-
-  2. Security
-    - No changes to RLS policies needed
-*/
-
--- Add gender column with check constraint
+-- Eliminar la restricción actual
 ALTER TABLE categories
-ADD COLUMN IF NOT EXISTS gender text NOT NULL DEFAULT 'women'
-CHECK (gender IN ('men', 'women'));
+DROP CONSTRAINT IF EXISTS categories_gender_check;
 
--- Update existing records to have a default gender
-UPDATE categories SET gender = 'women' WHERE gender IS NULL;
+-- Añadir una nueva restricción que incluya 'cold_weather'
+ALTER TABLE categories
+ADD CONSTRAINT categories_gender_check
+CHECK (gender IN ('men', 'women', 'cold_weather'));
