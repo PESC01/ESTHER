@@ -4,10 +4,74 @@ import { ProductCard } from './components/ProductCard';
 import { ProductModal } from './components/ProductModal';
 import { AdminLogin } from './components/AdminLogin';
 import { AdminPanel } from './components/AdminPanel';
-import { Menu } from 'lucide-react';
+import { Menu, Heart } from 'lucide-react';
 import { supabase } from './lib/supabase';
 import { ClothingItem, Gender, Category } from './types';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
+
+// Componente para la vista de favoritos
+const FavoritesView = ({
+  favorites,
+  products,
+  toggleFavorite,
+  setSelectedItem,
+  selectedItem,
+  onGoBack
+}) => {
+  const favoriteItems = products.filter(item => favorites.includes(item.id));
+
+  if (favoriteItems.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <Heart className="w-16 h-16 text-gray-300 mb-4" />
+        <h2 className="text-xl font-medium mb-2">No tienes favoritos</h2>
+        <p className="text-gray-500 mb-4 text-center">
+          Marca productos como favoritos para verlos aquí
+        </p>
+        <button
+          onClick={onGoBack}
+          className="px-4 py-2 bg-black text-white rounded-md"
+        >
+          Volver a la tienda
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 my-4">
+      <div className="flex justify-between items-center mb-6">
+        <button
+          onClick={onGoBack}
+          className="px-4 py-2 hover:bg-gray-100 rounded-md"
+        >
+          ← Volver
+        </button>
+        <h1 className="text-xl font-medium">Mis Favoritos</h1>
+        <div className="w-24"></div> {/* Espacio para equilibrar el header */}
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        {favoriteItems.map(item => (
+          <ProductCard
+            key={item.id}
+            item={item}
+            onClick={setSelectedItem}
+            isFavorite={true}
+            onToggleFavorite={toggleFavorite}
+          />
+        ))}
+      </div>
+
+      {selectedItem && (
+        <ProductModal
+          item={selectedItem}
+          onClose={() => setSelectedItem(null)}
+        />
+      )}
+    </div>
+  );
+};
 
 function App() {
   const [selectedGender, setSelectedGender] = useState<Gender | null>(null);
@@ -18,11 +82,23 @@ function App() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<ClothingItem[]>([]);
   const [loading, setLoading] = useState(true);
+  // Estado para almacenar los IDs de productos favoritos
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    const savedFavorites = localStorage.getItem('favorites');
+    return savedFavorites ? JSON.parse(savedFavorites) : [];
+  });
+  // Estado para ver si estamos en la vista de favoritos
+  const [viewingFavorites, setViewingFavorites] = useState(false);
 
   useEffect(() => {
     checkUser();
     loadData();
   }, []);
+
+  // Guardar favoritos en localStorage cuando cambian
+  useEffect(() => {
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+  }, [favorites]);
 
   const checkUser = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -45,6 +121,20 @@ function App() {
     }
   };
 
+  // Función para alternar favoritos
+  const toggleFavorite = (e: React.MouseEvent, productId: string) => {
+    // Detener la propagación para que no se abra el modal
+    e.stopPropagation();
+
+    setFavorites(prevFavorites => {
+      if (prevFavorites.includes(productId)) {
+        return prevFavorites.filter(id => id !== productId);
+      } else {
+        return [...prevFavorites, productId];
+      }
+    });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -57,6 +147,20 @@ function App() {
   const filteredItems = selectedCategory
     ? products.filter(item => item.category_id === selectedCategory && item.gender === selectedGender)
     : products.filter(item => item.gender === selectedGender);
+
+  // Renderizado condicional para la vista de favoritos
+  if (selectedGender && viewingFavorites) {
+    return (
+      <FavoritesView
+        favorites={favorites}
+        products={products}
+        toggleFavorite={toggleFavorite}
+        setSelectedItem={setSelectedItem}
+        selectedItem={selectedItem}
+        onGoBack={() => setViewingFavorites(false)}
+      />
+    );
+  }
 
   return (
     <BrowserRouter>
@@ -80,6 +184,19 @@ function App() {
                         </button>
                       </div>
 
+                      {/* Botón de favoritos con contador */}
+                      <button
+                        onClick={() => setViewingFavorites(true)}
+                        className="relative p-2 hover:bg-gray-100 rounded-md"
+                        aria-label="Ver favoritos"
+                      >
+                        <Heart className="w-6 h-6" />
+                        {favorites.length > 0 && (
+                          <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                            {favorites.length}
+                          </span>
+                        )}
+                      </button>
                     </div>
                   </div>
                 </header>
@@ -96,8 +213,7 @@ function App() {
                         </button>
                         <button
                           onClick={() => setSelectedGender(null)}
-                          className={`w-full text-left px-3 py-2 rounded-md ${!selectedCategory ? 'bg-black text-white' : 'hover:bg-gray-100'
-                            }`}
+                          className={`w-full text-left px-3 py-2 rounded-md hover:bg-gray-100`}
                         >
                           Cambiar Sección
                         </button>
@@ -120,6 +236,8 @@ function App() {
                             key={item.id}
                             item={item}
                             onClick={setSelectedItem}
+                            isFavorite={favorites.includes(item.id)}
+                            onToggleFavorite={toggleFavorite}
                           />
                         ))}
                       </div>

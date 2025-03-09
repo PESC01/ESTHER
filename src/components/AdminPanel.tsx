@@ -16,20 +16,20 @@ interface ProductRowProps {
 const ProductRow: React.FC<ProductRowProps> = ({ product, categories, setEditingProduct, deleteProduct }) => {
   // Asegúrate de que product.image_urls sea siempre un array
   const imageUrls = product.image_urls || [];
-  
+
   // Usar un hook por cada posible URL (con un máximo fijo)
   // Esto evita el error de "rendered fewer hooks than expected"
   const maxImages = 5; // Define un máximo razonable de imágenes
-  
+
   // Crear un array de URLs resueltas
   const imageUrlsResolved: string[] = [];
-  
+
   // Procesar cada URL hasta el máximo
   for (let i = 0; i < maxImages; i++) {
     // Usar el hook para cada posición potencial
     const url = i < imageUrls.length ? imageUrls[i] : '';
     const resolvedUrl = useImageUrl(url);
-    
+
     // Solo agregar URLs válidas al array resultante
     if (i < imageUrls.length) {
       imageUrlsResolved.push(resolvedUrl);
@@ -84,9 +84,19 @@ interface SectionImageProps {
 const SectionImageComponent: React.FC<SectionImageProps> = ({ gender, image, updateSectionImage }) => {
   const imageUrl = useImageUrl(image?.image_url || '');
 
+  // Obtener el nombre legible del género
+  const getGenderDisplay = (gender: Gender) => {
+    switch (gender) {
+      case 'women': return 'Mujer';
+      case 'men': return 'Hombre';
+      case 'cold_weather': return 'Ropa de Frío';
+      default: return gender;
+    }
+  };
+
   return (
     <div key={gender} className="space-y-4">
-      <h3 className="text-lg capitalize">{gender}</h3>
+      <h3 className="text-lg">{getGenderDisplay(gender)}</h3>
       {image && (
         <img
           src={imageUrl}
@@ -98,13 +108,12 @@ const SectionImageComponent: React.FC<SectionImageProps> = ({ gender, image, upd
         type="text"
         value={image?.image_url || ''}
         onChange={(e) => updateSectionImage(gender, e.target.value)}
-        placeholder="Image URL"
+        placeholder="URL de imagen"
         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
       />
     </div>
   );
 };
-
 export const AdminPanel: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<ClothingItem[]>([]);
@@ -124,6 +133,7 @@ export const AdminPanel: React.FC = () => {
   const [sectionImagesUrls, setSectionImagesUrls] = useState<Record<Gender, string>>({
     women: '',
     men: '',
+    cold_weather: '',
   });
 
   // Estado local para manejar las URLs de las imágenes del nuevo producto
@@ -144,35 +154,35 @@ export const AdminPanel: React.FC = () => {
     }
   }, [editingProduct]);
 
-// filepath: src/components/AdminPanel.tsx
-const loadData = async () => {
-  try {
-    const [
-      { data: categoriesData },
-      { data: productsData },
-      { data: sectionImagesData }
-    ] = await Promise.all([
-      supabase.from('categories').select('*').order('name'),
-      supabase.from('products').select('*').order('name'),
-      supabase.from('section_images').select('*')
-    ]);
+  // filepath: src/components/AdminPanel.tsx
+  const loadData = async () => {
+    try {
+      const [
+        { data: categoriesData },
+        { data: productsData },
+        { data: sectionImagesData }
+      ] = await Promise.all([
+        supabase.from('categories').select('*').order('name'),
+        supabase.from('products').select('*').order('name'),
+        supabase.from('section_images').select('*')
+      ]);
 
-    // Asegúrate de que image_urls sea un array en todos los productos
-    const productsWithImageUrls = productsData?.map(product => ({
-      ...product,
-      image_urls: product.image_urls || [], // Ensure image_urls is always an array
-    })) || [];
+      // Asegúrate de que image_urls sea un array en todos los productos
+      const productsWithImageUrls = productsData?.map(product => ({
+        ...product,
+        image_urls: product.image_urls || [], // Ensure image_urls is always an array
+      })) || [];
 
-    setCategories(categoriesData || []);
-    setProducts(productsWithImageUrls);
-    setSectionImages(sectionImagesData || []);
+      setCategories(categoriesData || []);
+      setProducts(productsWithImageUrls);
+      setSectionImages(sectionImagesData || []);
 
-  } catch (error) {
-    console.error('Error loading data:', error);
-  } finally {
-    setLoading(false);
-  }
-};
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -280,22 +290,22 @@ const loadData = async () => {
   const updateSectionImage = async (gender: Gender, imageUrl: string) => {
     try {
       const existingImage = sectionImages.find(img => img.gender === gender);
-      
+
       if (existingImage) {
         const { error } = await supabase
           .from('section_images')
           .update({ image_url: imageUrl })
           .eq('id', existingImage.id);
-        
+
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from('section_images')
           .insert([{ gender, image_url: imageUrl }]);
-        
+
         if (error) throw error;
       }
-      
+
       loadData();
     } catch (error) {
       console.error('Error updating section image:', error);
@@ -400,6 +410,7 @@ const loadData = async () => {
               >
                 <option value="women">Mujer</option>
                 <option value="men">Hombre</option>
+                <option value="cold_weather">Ropa de Frío</option>
               </select>
               <button
                 type="submit"
@@ -431,16 +442,16 @@ const loadData = async () => {
         {activeTab === 'products' && (
           <section className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-medium mb-4">Productos</h2>
-            
+
             <form onSubmit={editingProduct ? updateProduct : addProduct} className="mb-8 grid grid-cols-1 gap-4">
               <div className="grid grid-cols-2 gap-4">
                 <input
                   type="text"
                   placeholder="Nombre del producto"
                   value={editingProduct?.name || newProduct.name}
-                  onChange={(e) => editingProduct 
-                    ? setEditingProduct({...editingProduct, name: e.target.value})
-                    : setNewProduct({...newProduct, name: e.target.value})
+                  onChange={(e) => editingProduct
+                    ? setEditingProduct({ ...editingProduct, name: e.target.value })
+                    : setNewProduct({ ...newProduct, name: e.target.value })
                   }
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
                 />
@@ -451,9 +462,9 @@ const loadData = async () => {
                   onChange={(e) => {
                     const value = e.target.value === '' ? 0 : parseFloat(e.target.value);
                     if (editingProduct) {
-                      setEditingProduct({...editingProduct, price: value});
+                      setEditingProduct({ ...editingProduct, price: value });
                     } else {
-                      setNewProduct({...newProduct, price: value});
+                      setNewProduct({ ...newProduct, price: value });
                     }
                   }}
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
@@ -463,12 +474,12 @@ const loadData = async () => {
                 placeholder="Descripción"
                 value={editingProduct?.description || newProduct.description}
                 onChange={(e) => editingProduct
-                  ? setEditingProduct({...editingProduct, description: e.target.value})
-                  : setNewProduct({...newProduct, description: e.target.value})
+                  ? setEditingProduct({ ...editingProduct, description: e.target.value })
+                  : setNewProduct({ ...newProduct, description: e.target.value })
                 }
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
               />
-              
+
               {/* Campos para agregar URLs de imágenes (nuevo producto) */}
               {!editingProduct && (
                 <div>
@@ -543,8 +554,8 @@ const loadData = async () => {
                 <select
                   value={editingProduct?.category_id || newProduct.category_id}
                   onChange={(e) => editingProduct
-                    ? setEditingProduct({...editingProduct, category_id: e.target.value})
-                    : setNewProduct({...newProduct, category_id: e.target.value})
+                    ? setEditingProduct({ ...editingProduct, category_id: e.target.value })
+                    : setNewProduct({ ...newProduct, category_id: e.target.value })
                   }
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
                 >
@@ -556,13 +567,14 @@ const loadData = async () => {
                 <select
                   value={editingProduct?.gender || newProduct.gender}
                   onChange={(e) => editingProduct
-                    ? setEditingProduct({...editingProduct, gender: e.target.value as Gender})
-                    : setNewProduct({...newProduct, gender: e.target.value as Gender})
+                    ? setEditingProduct({ ...editingProduct, gender: e.target.value as Gender })
+                    : setNewProduct({ ...newProduct, gender: e.target.value as Gender })
                   }
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
                 >
                   <option value="women">Mujer</option>
                   <option value="men">Hombre</option>
+                  <option value="cold_weather">Ropa de Frío</option>
                 </select>
               </div>
               <div className="flex justify-end gap-4">
@@ -639,11 +651,11 @@ const loadData = async () => {
         {activeTab === 'sections' && (
           <section className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-medium mb-4">Section Images</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {(['women', 'men'] as Gender[]).map((gender) => (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {(['women', 'men', 'cold_weather'] as Gender[]).map((gender) => (
                 <SectionImageComponent
                   key={gender}
-                  gender={gender}
+                  gender={gender === 'cold_weather' ? 'cold_weather' : gender}
                   image={sectionImages.find(img => img.gender === gender)}
                   updateSectionImage={updateSectionImage}
                 />

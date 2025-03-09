@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { ClothingItem } from '../types';
-import { X, Phone } from 'lucide-react';
+import { X, Phone, Heart } from 'lucide-react';
 import { useImageUrl } from '../lib/imageUtils';
 
 interface ProductModalProps {
   item: ClothingItem;
   onClose: () => void;
+  isFavorite?: boolean;
+  onToggleFavorite?: (e: React.MouseEvent, id: string) => void;
 }
 
 // Componente para renderizar cada miniatura
@@ -21,7 +23,12 @@ const Thumbnail: React.FC<{ url: string; onClick: () => void; active: boolean; a
   );
 };
 
-export const ProductModal: React.FC<ProductModalProps> = ({ item, onClose }) => {
+export const ProductModal: React.FC<ProductModalProps> = ({
+  item,
+  onClose,
+  isFavorite = false,
+  onToggleFavorite
+}) => {
   const [mainIndex, setMainIndex] = useState(0);
   const mainImageUrl = useImageUrl(item.image_urls[mainIndex] || '');
 
@@ -33,15 +40,28 @@ export const ProductModal: React.FC<ProductModalProps> = ({ item, onClose }) => 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50 overflow-y-auto">
       <div className="bg-white w-full max-w-2xl rounded-lg overflow-hidden relative my-2 sm:my-0">
-        {/* Botón de cierre mejorado para móviles */}
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 sm:top-4 sm:right-4 p-3 sm:p-2 bg-black bg-opacity-70 hover:bg-opacity-100 text-white rounded-full z-50 shadow-lg"
-          aria-label="Cerrar"
-          style={{ minWidth: '40px', minHeight: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-        >
-          <X className="w-6 h-6" />
-        </button>
+        {/* Controles superiores */}
+        <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex gap-2">
+          {onToggleFavorite && (
+            <button
+              onClick={(e) => onToggleFavorite(e, item.id)}
+              className="p-3 sm:p-2 bg-white bg-opacity-70 hover:bg-opacity-100 rounded-full z-50 shadow-lg"
+              aria-label={isFavorite ? "Quitar de favoritos" : "Añadir a favoritos"}
+              style={{ minWidth: '40px', minHeight: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              <Heart className={`w-6 h-6 ${isFavorite ? 'fill-pink-500 text-pink-500' : 'text-gray-700'}`} />
+            </button>
+          )}
+
+          <button
+            onClick={onClose}
+            className="p-3 sm:p-2 bg-black bg-opacity-70 hover:bg-opacity-100 text-white rounded-full z-50 shadow-lg"
+            aria-label="Cerrar"
+            style={{ minWidth: '40px', minHeight: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {/* Columna de imágenes */}

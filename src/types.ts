@@ -1,4 +1,4 @@
-export type Gender = 'women' | 'men';
+export type Gender = 'women' | 'men' | 'cold_weather';
 
 export interface Category {
   id: string;
@@ -13,7 +13,7 @@ export interface ClothingItem {
   name: string;
   price: number;
   description: string;
-  image_urls: string[]; 
+  image_urls: string[];
   category_id: string;
   gender: Gender;
   created_at?: string;
