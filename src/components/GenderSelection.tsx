@@ -103,7 +103,7 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
             <img
               src={womenImageUrl}
               alt="Women's Collection"
-              className={`w-full h-full object-cover transition-transform duration-200 ${hoveredGender === 'women' ? 'scale-105' : ''}`}
+              className={`w-full h-full object-cover md:object-contain transition-transform duration-200 ${hoveredGender === 'women' ? 'scale-105' : ''}`}
             />
             <div className="absolute inset-0 flex items-center justify-center">
               <h2 className="text-2xl sm:text-4xl md:text-6xl text-white font-light tracking-wider">MUJER</h2>
@@ -120,7 +120,7 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
             <img
               src={menImageUrl}
               alt="Men's Collection"
-              className={`w-full h-full object-cover transition-transform duration-200 ${hoveredGender === 'men' ? 'scale-105' : ''}`}
+              className={`w-full h-full object-cover md:object-contain transition-transform duration-200 ${hoveredGender === 'men' ? 'scale-105' : ''}`}
             />
             <div className="absolute inset-0 flex items-center justify-center">
               <h2 className="text-2xl sm:text-4xl md:text-6xl text-white font-light tracking-wider">HOMBRE</h2>
@@ -140,7 +140,7 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
             <img
               src={coldWeatherImageUrl}
               alt="Cold Weather Collection"
-              className="w-full h-full object-cover transition-transform duration-200"
+              className="w-full h-full object-cover md:object-contain transition-transform duration-200"
               style={{
                 transform: hoveredGender === 'cold_weather' ? 'scale(1.05)' : 'scale(1)'
               }}
