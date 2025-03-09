@@ -85,7 +85,7 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
 
   return (
     <div
-      className="min-h-screen flex flex-col relative"
+      className="flex flex-col relative pt-24 sm:pt-28 h-[calc(100vh-6rem)]"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
