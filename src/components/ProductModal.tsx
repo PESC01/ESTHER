@@ -26,7 +26,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({ item, onClose }) => 
   const mainImageUrl = useImageUrl(item.image_urls[mainIndex] || '');
 
   // Construye el mensaje con encodeURIComponent
-  const message = encodeURIComponent(`Hola! Quisiera realizar un pedido de ${item.name} con un precio de Bs${item.price.toFixed(2)}. Gracias!`);
+  const message = encodeURIComponent(`Hola! Quisiera realizar un pedido de ${item.name} con un precio de ${item.price.toFixed(2)} Bs. Gracias!`);
   // Construye la URL completa de WhatsApp
   const whatsappLink = `https://wa.me/74534873?text=${message}`;
 
@@ -71,7 +71,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({ item, onClose }) => 
           <div className="p-4 sm:p-6 flex flex-col justify-between">
             <div>
               <h2 className="text-xl sm:text-2xl font-medium mb-2">{item.name}</h2>
-              <p className="text-xl sm:text-2xl mb-3 sm:mb-4">Bs{item.price.toFixed(2)}</p>
+              <p className="text-xl sm:text-2xl mb-3 sm:mb-4">{item.price.toFixed(2)} Bs</p>
               <p className="text-gray-600 mb-4 sm:mb-6">{item.description}</p>
             </div>
             <div className="w-full pb-4">
