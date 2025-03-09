@@ -11,20 +11,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick }) => {
   const mainImageUrl = useImageUrl(item.image_urls[0] || '');
 
   return (
-    <div 
-      className="group cursor-pointer"
+    <div
+      className="group cursor-pointer flex flex-col"
       onClick={() => onClick(item)}
     >
-      <div className="aspect-square overflow-hidden bg-gray-100">
-        <img 
+      <div className="aspect-square w-full overflow-hidden bg-gray-100 rounded-md">
+        <img
           src={mainImageUrl}
           alt={item.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
       </div>
-      <div className="mt-4 space-y-1">
-        <h3 className="text-lg font-medium">{item.name}</h3>
-        <p className="text-lg">Bs{item.price.toFixed(2)}</p>
+      <div className="mt-2 space-y-0.5">
+        <h3 className="text-sm md:text-base font-medium truncate">{item.name}</h3>
+        <p className="text-sm md:text-base font-semibold">Bs{item.price.toFixed(2)}</p>
       </div>
     </div>
   );

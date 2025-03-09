@@ -54,7 +54,7 @@ function App() {
   }
 
   const filteredCategories = categories.filter(category => category.gender === selectedGender);
-  const filteredItems = selectedCategory 
+  const filteredItems = selectedCategory
     ? products.filter(item => item.category_id === selectedCategory && item.gender === selectedGender)
     : products.filter(item => item.gender === selectedGender);
 
@@ -79,7 +79,7 @@ function App() {
                           <img src="/Esther.PNG" alt="Esther Logo" className="h-12 mx-auto" />
                         </button>
                       </div>
-                      
+
                     </div>
                   </div>
                 </header>
@@ -89,17 +89,15 @@ function App() {
                       <nav className="space-y-1">
                         <button
                           onClick={() => setSelectedCategory(null)}
-                          className={`w-full text-left px-3 py-2 rounded-md ${
-                            !selectedCategory ? 'bg-black text-white' : 'hover:bg-gray-100'
-                          }`}
+                          className={`w-full text-left px-3 py-2 rounded-md ${!selectedCategory ? 'bg-black text-white' : 'hover:bg-gray-100'
+                            }`}
                         >
                           Todos
                         </button>
                         <button
                           onClick={() => setSelectedGender(null)}
-                          className={`w-full text-left px-3 py-2 rounded-md ${
-                            !selectedCategory ? 'bg-black text-white' : 'hover:bg-gray-100'
-                          }`}
+                          className={`w-full text-left px-3 py-2 rounded-md ${!selectedCategory ? 'bg-black text-white' : 'hover:bg-gray-100'
+                            }`}
                         >
                           Cambiar Sección
                         </button>
@@ -107,9 +105,8 @@ function App() {
                           <button
                             key={category.id}
                             onClick={() => setSelectedCategory(category.id)}
-                            className={`w-full text-left px-3 py-2 rounded-md ${
-                              selectedCategory === category.id ? 'bg-black text-white' : 'hover:bg-gray-100'
-                            }`}
+                            className={`w-full text-left px-3 py-2 rounded-md ${selectedCategory === category.id ? 'bg-black text-white' : 'hover:bg-gray-100'
+                              }`}
                           >
                             {category.name}
                           </button>
@@ -117,7 +114,7 @@ function App() {
                       </nav>
                     </aside>
                     <main className="flex-1">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      <div className="grid grid-cols-2 gap-3 md:gap-4">
                         {filteredItems.map(item => (
                           <ProductCard
                             key={item.id}
