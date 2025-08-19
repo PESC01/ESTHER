@@ -239,39 +239,28 @@ export const AdminPanel: React.FC = () => {
     }
   };
 
-  const deleteProduct = async (id: string) => {
+  const deleteProduct = async (id: number) => {
     if (!confirm('¿Estás seguro de que quieres eliminar este producto? Esta acción no se puede deshacer.')) {
       return;
     }
 
     try {
-      // Primero obtener el producto para acceder a sus imágenes
-      const productToDelete = products.find(p => p.id === id);
-      
-      if (productToDelete && productToDelete.image_urls) {
-        // Eliminar todas las imágenes del producto de Cloudinary
-        const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        
-        for (const imageUrl of productToDelete.image_urls) {
-          if (imageUrl && imageUrl.includes('cloudinary.com')) {
-            try {
-              await fileManager.deleteFile(imageUrl);
-              console.log('Imagen eliminada de Cloudinary:', imageUrl);
-            } catch (error) {
-              console.warn('Error eliminando imagen de Cloudinary:', error);
-              
-              if (isDevelopment) {
-                console.warn(`⚠️ Desarrollo: La imagen ${imageUrl} permanecerá en Cloudinary`);
-              } else {
-                // Solo mostrar alert en producción si realmente falla
-                alert(`Advertencia: No se pudo eliminar la imagen ${imageUrl} de Cloudinary. El producto se eliminará de la base de datos.`);
-              }
-            }
-          }
-        }
-      }
+      // COMENTADO: No eliminar imágenes de Cloudinary automáticamente
+      // const productToDelete = products.find(p => p.id === id);
+      // if (productToDelete && productToDelete.image_urls) {
+      //   for (const imageUrl of productToDelete.image_urls) {
+      //     if (imageUrl && imageUrl.includes('cloudinary.com')) {
+      //       try {
+      //         await fileManager.deleteFile(imageUrl);
+      //         console.log('Imagen eliminada de Cloudinary:', imageUrl);
+      //       } catch (error) {
+      //         console.warn('Error eliminando imagen de Cloudinary:', error);
+      //       }
+      //     }
+      //   }
+      // }
 
-      // Eliminar el producto de la base de datos
+      // Solo eliminar el producto de la base de datos
       const { error } = await supabase
         .from('products')
         .delete()
@@ -279,7 +268,7 @@ export const AdminPanel: React.FC = () => {
 
       if (error) throw error;
       
-      alert('Producto eliminado exitosamente');
+      alert('Producto eliminado exitosamente (imágenes conservadas en Cloudinary)');
       loadData();
     } catch (error) {
       console.error('Error deleting product:', error);
@@ -291,16 +280,15 @@ export const AdminPanel: React.FC = () => {
     try {
       const existingImage = sectionImages.find(img => img.gender === gender);
 
-      // Si hay una imagen existente, eliminarla de Cloudinary antes de subir la nueva
-      if (existingImage && existingImage.image_url && existingImage.image_url.includes('cloudinary.com')) {
-        try {
-          await fileManager.deleteFile(existingImage.image_url);
-          console.log('Imagen de sección anterior eliminada de Cloudinary:', existingImage.image_url);
-        } catch (error) {
-          console.warn('Error eliminando imagen anterior de Cloudinary:', error);
-          // Continuar con la actualización aunque falle la eliminación
-        }
-      }
+      // COMENTADO: No eliminar imagen anterior de Cloudinary
+      // if (existingImage && existingImage.image_url && existingImage.image_url.includes('cloudinary.com')) {
+      //   try {
+      //     await fileManager.deleteFile(existingImage.image_url);
+      //     console.log('Imagen de sección anterior eliminada de Cloudinary:', existingImage.image_url);
+      //   } catch (error) {
+      //     console.warn('Error eliminando imagen anterior de Cloudinary:', error);
+      //   }
+      // }
 
       if (existingImage) {
         const { error } = await supabase
@@ -309,12 +297,14 @@ export const AdminPanel: React.FC = () => {
           .eq('id', existingImage.id);
 
         if (error) throw error;
+        console.log('Imagen de sección actualizada (imagen anterior conservada en Cloudinary)');
       } else {
         const { error } = await supabase
           .from('section_images')
           .insert([{ gender, image_url: imageUrl }]);
 
         if (error) throw error;
+        console.log('Nueva imagen de sección agregada');
       }
 
       loadData();
@@ -328,29 +318,26 @@ export const AdminPanel: React.FC = () => {
     if (!editingProduct?.id) return;
 
     try {
-      // Obtener el producto original para comparar las imágenes
-      const originalProduct = products.find(p => p.id === editingProduct.id);
-      
-      if (originalProduct && originalProduct.image_urls) {
-        // Encontrar imágenes que fueron removidas
-        const removedImages = originalProduct.image_urls.filter(
-          originalUrl => !editingImageUrls.includes(originalUrl)
-        );
-        
-        // Eliminar las imágenes removidas de Cloudinary
-        for (const removedImageUrl of removedImages) {
-          if (removedImageUrl && removedImageUrl.includes('cloudinary.com')) {
-            try {
-              await fileManager.deleteFile(removedImageUrl);
-              console.log('Imagen removida eliminada de Cloudinary:', removedImageUrl);
-            } catch (error) {
-              console.warn('Error eliminando imagen removida de Cloudinary:', error);
-            }
-          }
-        }
-      }
+      // COMENTADO: No eliminar imágenes removidas de Cloudinary
+      // const originalProduct = products.find(p => p.id === editingProduct.id);
+      // if (originalProduct && originalProduct.image_urls) {
+      //   const removedImages = originalProduct.image_urls.filter(
+      //     originalUrl => !editingImageUrls.includes(originalUrl)
+      //   );
+      //   
+      //   for (const removedImageUrl of removedImages) {
+      //     if (removedImageUrl && removedImageUrl.includes('cloudinary.com')) {
+      //       try {
+      //         await fileManager.deleteFile(removedImageUrl);
+      //         console.log('Imagen removida eliminada de Cloudinary:', removedImageUrl);
+      //       } catch (error) {
+      //         console.warn('Error eliminando imagen removida de Cloudinary:', error);
+      //       }
+      //     }
+      //   }
+      // }
 
-      // Combina las URLs de las imágenes del estado local con el producto en edición
+      // Solo actualizar el producto con las nuevas URLs
       const productToUpdate = {
         ...editingProduct,
         image_urls: editingImageUrls,
@@ -362,11 +349,14 @@ export const AdminPanel: React.FC = () => {
         .eq('id', editingProduct.id);
 
       if (error) throw error;
+      
+      alert('Producto actualizado exitosamente (imágenes anteriores conservadas en Cloudinary)');
       setEditingProduct(null);
       setEditingImageUrls([]);
       loadData();
     } catch (error) {
       console.error('Error updating product:', error);
+      alert('Error actualizando el producto: ' + (error instanceof Error ? error.message : 'Error desconocido'));
     }
   };
 
