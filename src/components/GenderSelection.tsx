@@ -33,16 +33,16 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
   const coldWeatherImageUrl = useImageUrl(images.cold_weather);
 
   useEffect(() => {
-    // Intentar recuperar imágenes del caché primero
-    const cachedImages = getCachedImages();
-    if (cachedImages) {
-      console.log('Usando imágenes en caché');
-      setImages(cachedImages);
-      preloadImages(cachedImages);
-    } else {
-      // Si no hay caché, cargar desde la base de datos
-      loadSectionImages();
-    }
+    // Siempre cargar desde la base de datos para asegurar datos actualizados
+    loadSectionImages();
+    
+    // Opcional: también intentar cargar del caché como fallback
+    // const cachedImages = getCachedImages();
+    // if (cachedImages) {
+    //   console.log('Usando imágenes en caché como fallback');
+    //   setImages(cachedImages);
+    //   preloadImages(cachedImages);
+    // }
   }, []);
 
   // Función para obtener imágenes del caché
@@ -116,16 +116,32 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
     });
   };
 
+  // Actualizar la función loadSectionImages para manejar mejor los errores
   const loadSectionImages = async () => {
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('section_images')
         .select('*');
 
+      if (error) {
+        console.error('Error cargando imágenes de sección:', error);
+        // Usar caché como fallback si hay error en la base de datos
+        const cachedImages = getCachedImages();
+        if (cachedImages) {
+          setImages(cachedImages);
+          preloadImages(cachedImages);
+        }
+        return;
+      }
+
       console.log('🔍 Datos completos de section_images:', data);
 
-      if (data) {
-        const newImages = { ...images };
+      if (data && data.length > 0) {
+        const newImages = {
+          women: '',
+          men: '',
+          cold_weather: ''
+        };
         
         console.log('🔍 Estado inicial de images:', newImages);
         
@@ -146,10 +162,19 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
         setImages(newImages);
         cacheImages(newImages);
         preloadImages(newImages);
+      } else {
+        console.log('No se encontraron imágenes de sección en la base de datos');
+        // Limpiar caché si no hay datos
+        localStorage.removeItem(SECTION_IMAGES_CACHE_KEY);
       }
     } catch (error) {
-      console.error('Error loading section images:', error);
-      setIsLoadingImages(false);
+      console.error('Error cargando imágenes de sección:', error);
+      // Usar caché como fallback
+      const cachedImages = getCachedImages();
+      if (cachedImages) {
+        setImages(cachedImages);
+        preloadImages(cachedImages);
+      }
     }
   };
 
