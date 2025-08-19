@@ -1,10 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { v2 as cloudinary } from 'cloudinary';
 
-// Configurar Cloudinary con variables de entorno
+// Configurar Cloudinary con las MISMAS variables que upload.ts
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
+  cloud_name: process.env.VITE_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.VITE_CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
@@ -33,6 +33,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     console.log('Attempting to delete image with public ID:', publicId);
+    console.log('Cloudinary config:', {
+      cloud_name: process.env.VITE_CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.VITE_CLOUDINARY_API_KEY ? '***' : 'NOT_SET',
+      api_secret: process.env.CLOUDINARY_API_SECRET ? '***' : 'NOT_SET'
+    });
+    
+    // Verificar que la configuración esté completa
+    if (!process.env.VITE_CLOUDINARY_CLOUD_NAME || !process.env.VITE_CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+      throw new Error('Cloudinary configuration incomplete');
+    }
     
     // Eliminar la imagen de Cloudinary
     const result = await cloudinary.uploader.destroy(publicId);
@@ -56,7 +66,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.error('Cloudinary delete error:', error);
     res.status(500).json({ 
       error: 'Delete failed',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
+      cloudinaryConfigured: !!(process.env.VITE_CLOUDINARY_CLOUD_NAME && process.env.VITE_CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET)
     });
   }
 }

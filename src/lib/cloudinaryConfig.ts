@@ -86,17 +86,13 @@ export const deleteFromCloudinary = async (publicId: string): Promise<void> => {
     
     let apiUrl: string;
     if (isDevelopment) {
-      // En desarrollo, usar la URL completa de Vercel si está disponible
       const deployUrl = import.meta.env.VITE_VERCEL_URL || import.meta.env.VITE_DEPLOY_URL;
       if (deployUrl) {
         apiUrl = `https://${deployUrl}/api/cloudinary/delete`;
       } else {
-        // Si no hay URL de deploy, intentar usar localhost:3000 (si tienes un servidor local)
-        // o lanzar un error informativo
-        throw new Error('Eliminación de Cloudinary no disponible en desarrollo local. La imagen permanecerá en Cloudinary.');
+        throw new Error('Eliminación de Cloudinary no disponible en desarrollo local. Configura VITE_VERCEL_URL en tu .env');
       }
     } else {
-      // En producción, usar la ruta relativa
       apiUrl = '/api/cloudinary/delete';
     }
 
@@ -108,9 +104,19 @@ export const deleteFromCloudinary = async (publicId: string): Promise<void> => {
       body: JSON.stringify({ publicId }),
     });
 
+    console.log('Response status:', response.status);
+    
     if (!response.ok) {
-      const errorData = await response.text();
-      throw new Error(`Error eliminando de Cloudinary: ${response.status} - ${errorData}`);
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+      
+      // Intentar parsear como JSON si es posible
+      try {
+        const errorData = JSON.parse(errorText);
+        throw new Error(`Error eliminando de Cloudinary: ${response.status} - ${errorData.error || errorData.details || errorText}`);
+      } catch (parseError) {
+        throw new Error(`Error eliminando de Cloudinary: ${response.status} - ${errorText}`);
+      }
     }
 
     const result = await response.json();
