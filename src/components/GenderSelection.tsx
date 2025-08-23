@@ -36,13 +36,7 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
     // Siempre cargar desde la base de datos para asegurar datos actualizados
     loadSectionImages();
     
-    // Opcional: también intentar cargar del caché como fallback
-    // const cachedImages = getCachedImages();
-    // if (cachedImages) {
-    //   console.log('Usando imágenes en caché como fallback');
-    //   setImages(cachedImages);
-    //   preloadImages(cachedImages);
-    // }
+
   }, []);
 
   // Función para obtener imágenes del caché
@@ -89,7 +83,7 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
         };
         img.onerror = (error) => {
           console.error(`Error cargando imagen para ${gender}:`, url, error);
-          console.log('Intentando cargar imagen directamente...');
+          console.log('Intentando una segunda vez con un timeout');
           
           // Intentar una segunda vez con un timeout
           setTimeout(() => {
@@ -311,18 +305,18 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
       {/* Botón flotante para alternar entre vistas */}
       <button
         onClick={toggleDisplay}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-black bg-opacity-50 rounded-full p-3 text-white hover:bg-opacity-70 transition-all duration-300 focus:outline-none"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-black bg-opacity-50 rounded-full p-2 sm:p-3 text-white hover:bg-opacity-70 transition-all duration-300 focus:outline-none"
         aria-label={showColdWeather ? "Mostrar categorías" : "Ver ropa de frío"}
       >
         {showColdWeather ? (
           <div className="flex flex-col items-center">
-            <span className="text-xs text-white mb-1 px-1 hidden sm:block">Categorías</span>
-            <ChevronLeft size={24} className="sm:size-32" />
+            <span className="text-xs text-white mb-1 px-1 block sm:hidden">Categorías</span>
+            <ChevronLeft size={20} className="sm:size-24" />
           </div>
         ) : (
           <div className="flex flex-col items-center">
-            <span className="text-xs text-white mb-1 px-1 hidden sm:block">Ropa de frío</span>
-            <ChevronRight size={24} className="sm:size-32" />
+            <span className="text-xs text-white mb-1 px-1 block sm:hidden">Ropa de frío</span>
+            <ChevronRight size={20} className="sm:size-24" />
           </div>
         )}
       </button>
