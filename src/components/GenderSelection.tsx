@@ -305,19 +305,13 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
       {/* Botón flotante para alternar entre vistas */}
       <button
         onClick={toggleDisplay}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-black bg-opacity-50 rounded-full p-2 sm:p-3 text-white hover:bg-opacity-70 transition-all duration-300 focus:outline-none"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-black bg-opacity-50 rounded-full p-2 sm:p-1 text-white hover:bg-opacity-70 transition-all duration-300 focus:outline-none"
         aria-label={showColdWeather ? "Mostrar categorías" : "Ver ropa de frío"}
       >
         {showColdWeather ? (
-          <div className="flex flex-col items-center">
-            <span className="text-xs text-white mb-1 px-1 block sm:hidden">Categorías</span>
-            <ChevronLeft size={20} className="sm:size-24" />
-          </div>
+          <ChevronLeft size={16} className="sm:size-20" />
         ) : (
-          <div className="flex flex-col items-center">
-            <span className="text-xs text-white mb-1 px-1 block sm:hidden">Ropa de frío</span>
-            <ChevronRight size={20} className="sm:size-24" />
-          </div>
+          <ChevronRight size={16} className="sm:size-20" />
         )}
       </button>
     </div>
