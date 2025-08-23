@@ -245,20 +245,7 @@ export const AdminPanel: React.FC = () => {
     }
 
     try {
-      // COMENTADO: No eliminar imágenes de Cloudinary automáticamente
-      // const productToDelete = products.find(p => p.id === id);
-      // if (productToDelete && productToDelete.image_urls) {
-      //   for (const imageUrl of productToDelete.image_urls) {
-      //     if (imageUrl && imageUrl.includes('cloudinary.com')) {
-      //       try {
-      //         await fileManager.deleteFile(imageUrl);
-      //         console.log('Imagen eliminada de Cloudinary:', imageUrl);
-      //       } catch (error) {
-      //         console.warn('Error eliminando imagen de Cloudinary:', error);
-      //       }
-      //     }
-      //   }
-      // }
+   
 
       // Solo eliminar el producto de la base de datos
       const { error } = await supabase
@@ -280,15 +267,7 @@ export const AdminPanel: React.FC = () => {
     try {
       const existingImage = sectionImages.find(img => img.gender === gender);
 
-      // COMENTADO: No eliminar imagen anterior de Cloudinary
-      // if (existingImage && existingImage.image_url && existingImage.image_url.includes('cloudinary.com')) {
-      //   try {
-      //     await fileManager.deleteFile(existingImage.image_url);
-      //     console.log('Imagen de sección anterior eliminada de Cloudinary:', existingImage.image_url);
-      //   } catch (error) {
-      //     console.warn('Error eliminando imagen anterior de Cloudinary:', error);
-      //   }
-      // }
+      
 
       if (existingImage) {
         const { error } = await supabase
@@ -318,24 +297,7 @@ export const AdminPanel: React.FC = () => {
     if (!editingProduct?.id) return;
 
     try {
-      // COMENTADO: No eliminar imágenes removidas de Cloudinary
-      // const originalProduct = products.find(p => p.id === editingProduct.id);
-      // if (originalProduct && originalProduct.image_urls) {
-      //   const removedImages = originalProduct.image_urls.filter(
-      //     originalUrl => !editingImageUrls.includes(originalUrl)
-      //   );
-      //   
-      //   for (const removedImageUrl of removedImages) {
-      //     if (removedImageUrl && removedImageUrl.includes('cloudinary.com')) {
-      //       try {
-      //         await fileManager.deleteFile(removedImageUrl);
-      //         console.log('Imagen removida eliminada de Cloudinary:', removedImageUrl);
-      //       } catch (error) {
-      //         console.warn('Error eliminando imagen removida de Cloudinary:', error);
-      //       }
-      //     }
-      //   }
-      // }
+    
 
       // Solo actualizar el producto con las nuevas URLs
       const productToUpdate = {
@@ -441,20 +403,20 @@ export const AdminPanel: React.FC = () => {
         </div>
 
         {activeTab === 'categories' && (
-          <section className="bg-white rounded-lg shadow p-6">
+          <section className="bg-white rounded-lg shadow p-4 sm:p-6">
             <h2 className="text-xl font-medium mb-4">Categorias</h2>
-            <form onSubmit={addCategory} className="flex gap-4 mb-4">
+            <form onSubmit={addCategory} className="space-y-4 sm:space-y-0 sm:flex sm:gap-4 mb-4">
               <input
                 type="text"
                 value={newCategory.name}
                 onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
                 placeholder="Nuevo Categoria"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
+                className="w-full sm:flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
               />
               <select
                 value={newCategory.gender}
                 onChange={(e) => setNewCategory({ ...newCategory, gender: e.target.value as Gender })}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
+                className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
               >
                 <option value="women">Mujer</option>
                 <option value="men">Hombre</option>
@@ -462,7 +424,7 @@ export const AdminPanel: React.FC = () => {
               </select>
               <button
                 type="submit"
-                className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800"
               >
                 <Plus className="w-4 h-4" />
                 Agregar
@@ -470,14 +432,14 @@ export const AdminPanel: React.FC = () => {
             </form>
             <ul className="divide-y divide-gray-200">
               {categories.map((category) => (
-                <li key={category.id} className="py-3 flex justify-between items-center">
+                <li key={category.id} className="py-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                   <div>
-                    <span>{category.name}</span>
-                    <span className="ml-2 text-sm text-gray-500 capitalize">({category.gender})</span>
+                    <span className="block sm:inline">{category.name}</span>
+                    <span className="block sm:inline sm:ml-2 text-sm text-gray-500 capitalize">({category.gender})</span>
                   </div>
                   <button
                     onClick={() => deleteCategory(category.id)}
-                    className="text-red-600 hover:text-red-800"
+                    className="text-red-600 hover:text-red-800 self-end sm:self-auto"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
