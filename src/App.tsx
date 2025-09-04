@@ -296,21 +296,35 @@ const MainPage = ({
         </div>
       ) : (
         <>
-          {/* Header solo aparece al hacer scroll, igual que en PC */}
+          {/* Logo grande sobre la portada */}
+          <div
+            className={`fixed top-0 left-0 w-full flex justify-center items-center z-40 transition-all duration-500 pointer-events-none ${
+              isScrolled ? 'opacity-0 scale-75 -translate-y-16' : 'opacity-100 scale-100 translate-y-0'
+            } mt-8 md:mt-16`} // <-- Agrega margen superior
+            style={{ height: '120px' }}
+          >
+            <img
+              src="/Esther.PNG"
+              alt="Esther Logo"
+              className="h-20 md:h-44 transition-all duration-500"
+              style={{ filter: 'drop-shadow(0 2px 16px rgba(0,0,0,0.12))' }}
+            />
+          </div>
+          {/* Header animado que aparece al hacer scroll */}
           <header
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
               isScrolled ? 'bg-white shadow-md' : 'bg-transparent'
             }`}
           >
             <div
-              className={`flex items-center justify-center mx-auto transition-all duration-300 ${
+              className={`flex items-center justify-center mx-auto transition-all duration-500 ${
                 isScrolled ? 'h-16' : 'h-0'
               }`}
             >
               <img
                 src="/Esther.PNG"
                 alt="Esther Logo"
-                className={`transition-all duration-300 ${
+                className={`transition-all duration-500 ${
                   isScrolled ? 'h-16' : 'h-0'
                 }`}
               />

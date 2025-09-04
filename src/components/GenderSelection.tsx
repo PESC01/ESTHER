@@ -138,7 +138,12 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
   };
 
   const handleScrollDown = () => {
-    categoriesRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (categoriesRef.current) {
+      const isMobile = window.innerWidth < 768;
+      const headerHeight = isMobile ? 64 : 0; // Ajusta según la altura real del header en móvil
+      const top = categoriesRef.current.getBoundingClientRect().top + window.scrollY - headerHeight;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -179,20 +184,22 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
           <img
             src={mainBannerUrl}
             alt="Portada Principal"
-            className="w-full object-contain md:object-cover"
-            style={{ objectPosition: 'center top', maxHeight: '52vh' }}
-            onLoad={() => handleImageLoad('main_banner')}
+            className="w-full object-contain md:object-cover md:h-screen"
+            style={{
+              objectPosition: 'center top',
+            }}
           />
         )}
+        {/* Botón sobre la imagen en desktop, debajo en móvil */}
+        <div className="w-full flex justify-center bg-white md:bg-transparent md:absolute md:bottom-8 md:left-0 md:right-0">
+          <button
+            onClick={handleScrollDown}
+            className="bg-white text-black px-6 py-3 rounded-md shadow-lg"
+          >
+            <span className="text-lg font-medium tracking-wider uppercase">Explora las novedades</span>
+          </button>
+        </div>
       </section>
-      <div className="w-full flex justify-center bg-white">
-        <button
-          onClick={handleScrollDown}
-          className="bg-white text-black px-6 py-3 rounded-md shadow-lg"
-        >
-          <span className="text-lg font-medium tracking-wider uppercase">Explora las novedades</span>
-        </button>
-      </div>
 
       {/* Contenido principal que se revela al hacer scroll */}
       <section ref={categoriesRef} className="bg-white">
