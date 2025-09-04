@@ -5,17 +5,22 @@ import { uploadToCloudinary } from '../lib/cloudinaryConfig';
 import { fileManager } from '../lib/fileManager';
 
 interface ImageUploaderProps {
+  label?: string;
+  maxImages?: number;
+  currentImages: string[];
   onImageUpload: (url: string) => void;
   onImageRemove?: (url: string) => void;
-  currentImages: string[];
-  maxImages?: number;
+  // Nuevo prop opcional para evitar colisiones de id entre varios uploaders
+  inputId?: string;
 }
 
 export const ImageUploader: React.FC<ImageUploaderProps> = ({
+  label = 'Imágenes',
+  maxImages = 5,
+  currentImages,
   onImageUpload,
   onImageRemove,
-  currentImages = [],
-  maxImages = 5
+  inputId
 }) => {
   const [dragOver, setDragOver] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -79,6 +84,9 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
     handleFileUpload(e.target.files);
   };
 
+  // Usar el inputId pasado o fallback a "file-upload"
+  const id = inputId || 'file-upload';
+
   return (
     <div className="space-y-4">
       {/* Área de subida */}
@@ -99,12 +107,12 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
           multiple
           onChange={handleFileInput}
           className="hidden"
-          id="file-upload"
+          id={id}
           disabled={uploading}
         />
         
         <label
-          htmlFor="file-upload"
+          htmlFor={id}
           className="cursor-pointer flex flex-col items-center space-y-2"
         >
           {uploading ? (

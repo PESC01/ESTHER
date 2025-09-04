@@ -8,16 +8,28 @@ export interface Category {
   updated_at?: string;
 }
 
+export interface Color {
+  id: string;
+  name: string;
+  hex_code: string;
+  image_urls: string[];
+}
+
+export interface Size {
+  id: string;
+  name: 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL';
+}
+
 export interface ClothingItem {
   id: string;
   name: string;
   price: number;
   description: string;
-  image_urls: string[]; // Cambiado de image_url a image_urls como array
+  image_urls: string[];
   category_id: string;
   gender: Gender;
-  created_at?: string;
-  updated_at?: string;
+  colors: Color[];
+  sizes: Size[];
 }
 
 export interface SectionImage {

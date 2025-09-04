@@ -6,6 +6,8 @@ import { ImageUploader } from './ImageUploader';
 import { SectionImageUploader } from './SectionImageUploader';
 import { fileManager } from '../lib/fileManager';
 import { useImageUrl } from '../lib/imageUtils'; // Agregar este import
+import { ColorManager } from './ColorManager';
+import { SizeManager } from './SizeManager';
 
 // Agregar el tipo SectionImage
 interface SectionImage {
@@ -19,7 +21,7 @@ interface ProductRowProps {
   product: ClothingItem;
   categories: Category[];
   setEditingProduct: (product: ClothingItem) => void;
-  deleteProduct: (id: string) => void;
+  deleteProduct: (id: string) => void; // <-- ajustar a string (ids son string en types)
 }
 
 const ProductRow: React.FC<ProductRowProps> = ({ product, categories, setEditingProduct, deleteProduct }) => {
@@ -30,21 +32,11 @@ const ProductRow: React.FC<ProductRowProps> = ({ product, categories, setEditing
     <tr>
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="flex flex-wrap gap-1">
-          {imageUrls.slice(0, 3).map((imageUrl, index) => (
-            <img
-              key={index}
-              src={imageUrl}
-              alt={`${product.name} - ${index + 1}`}
-              className="h-12 w-12 object-cover rounded"
-              onError={(e) => {
-                // Si la imagen falla al cargar, ocultar el elemento
-                e.currentTarget.style.display = 'none';
-              }}
-            />
-          ))}
-          {imageUrls.length > 3 && (
-            <div className="h-12 w-12 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-600">
-              +{imageUrls.length - 3}
+          {imageUrls[0] ? (
+            <img src={imageUrls[0]} alt={product.name} className="h-12 w-12 object-cover rounded" />
+          ) : (
+            <div className="h-12 w-12 bg-gray-100 flex items-center justify-center rounded text-sm text-gray-500">
+              Sin imagen
             </div>
           )}
         </div>
@@ -59,15 +51,15 @@ const ProductRow: React.FC<ProductRowProps> = ({ product, categories, setEditing
         <div className="flex gap-2">
           <button
             onClick={() => setEditingProduct(product)}
-            className="text-gray-600 hover:text-gray-800"
+            className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded"
           >
-            <Edit className="w-4 h-4" />
+            Editar
           </button>
           <button
             onClick={() => deleteProduct(product.id)}
-            className="text-red-600 hover:text-red-800"
+            className="px-3 py-1 bg-red-100 text-red-700 rounded"
           >
-            <Trash2 className="w-4 h-4" />
+            Eliminar
           </button>
         </div>
       </td>
@@ -77,17 +69,17 @@ const ProductRow: React.FC<ProductRowProps> = ({ product, categories, setEditing
 
 // Simplificar el componente SectionImageComponent - solo uploader, sin URL manual
 interface SectionImageProps {
-  gender: Gender;
+  gender: Gender | 'main_banner';
   image: SectionImage | undefined;
-  updateSectionImage: (gender: Gender, imageUrl: string) => void;
+  updateSectionImage: (gender: Gender | 'main_banner', imageUrl: string) => void;
 }
 
 const SectionImageComponent: React.FC<SectionImageProps> = ({ gender, image, updateSectionImage }) => {
-  const getGenderDisplay = (gender: Gender) => {
+  const getGenderDisplay = (gender: Gender | 'main_banner') => {
     switch (gender) {
-      case 'women': return 'Mujer';
-      case 'men': return 'Hombre';
-      case 'cold_weather': return 'Ropa de Frío';
+      case 'women': return 'Personajes Favoritos';
+      case 'men': return 'Poleras de Anime';
+      case 'main_banner': return 'Portada Principal';
       default: return gender;
     }
   };
@@ -116,9 +108,11 @@ export const AdminPanel: React.FC = () => {
     name: '',
     price: 0,
     description: '',
-    image_urls: [], // Cambiado a un array de strings
+    image_urls: [],
     category_id: '',
-    gender: 'women'
+    gender: 'women',
+    colors: [],
+    sizes: []
   });
   const [sectionImagesUrls, setSectionImagesUrls] = useState<Record<Gender, string>>({
     women: '',
@@ -212,41 +206,71 @@ export const AdminPanel: React.FC = () => {
 
   const addProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validación mejorada
+    if (!newProduct.name?.trim()) {
+      alert('El nombre del producto es requerido');
+      return;
+    }
+    
+    if (!newProduct.category_id || newProduct.category_id.trim() === '') {
+      alert('Debes seleccionar una categoría');
+      return;
+    }
+    
+    if (newImageUrls.length === 0) {
+      alert('Debes subir al menos una imagen del producto');
+      return;
+    }
+
     try {
-      // Combina las URLs de las imágenes del estado local con el nuevo producto
-      const productToInsert = {
-        ...newProduct,
+      const productToCreate = {
+        name: newProduct.name.trim(),
+        price: Number(newProduct.price) || 0,
+        description: newProduct.description?.trim() || '',
         image_urls: newImageUrls,
+        category_id: newProduct.category_id,
+        gender: newProduct.gender || 'women',
+        colors: newProduct.colors || [],
+        sizes: newProduct.sizes || []
       };
+
+      console.log('Creando producto:', productToCreate); // Debug
 
       const { error } = await supabase
         .from('products')
-        .insert([productToInsert]);
+        .insert([productToCreate]);
 
       if (error) throw error;
+      
+      alert('Producto creado exitosamente');
+      
+      // Reset form
       setNewProduct({
         name: '',
         price: 0,
         description: '',
         image_urls: [],
         category_id: '',
-        gender: 'women'
+        gender: 'women',
+        colors: [],
+        sizes: []
       });
-      setNewImageUrls([]); // Limpia las URLs de las imágenes después de agregar el producto
+      setNewImageUrls([]);
+      
       loadData();
     } catch (error) {
       console.error('Error adding product:', error);
+      alert('Error creando el producto: ' + (error instanceof Error ? error.message : 'Error desconocido'));
     }
   };
 
-  const deleteProduct = async (id: number) => {
+  const deleteProduct = async (id: string) => {
     if (!confirm('¿Estás seguro de que quieres eliminar este producto? Esta acción no se puede deshacer.')) {
       return;
     }
 
     try {
-   
-
       // Solo eliminar el producto de la base de datos
       const { error } = await supabase
         .from('products')
@@ -263,11 +287,9 @@ export const AdminPanel: React.FC = () => {
     }
   };
 
-  const updateSectionImage = async (gender: Gender, imageUrl: string) => {
+  const updateSectionImage = async (gender: Gender | 'main_banner', imageUrl: string) => {
     try {
       const existingImage = sectionImages.find(img => img.gender === gender);
-
-      
 
       if (existingImage) {
         const { error } = await supabase
@@ -283,7 +305,7 @@ export const AdminPanel: React.FC = () => {
           .insert([{ gender, image_url: imageUrl }]);
 
         if (error) throw error;
-        console.log('Nueva imagen de sección agregada');
+        console.log('Imagen de sección creada');
       }
 
       loadData();
@@ -297,12 +319,11 @@ export const AdminPanel: React.FC = () => {
     if (!editingProduct?.id) return;
 
     try {
-    
-
-      // Solo actualizar el producto con las nuevas URLs
       const productToUpdate = {
         ...editingProduct,
         image_urls: editingImageUrls,
+        colors: editingProduct.colors || [],
+        sizes: editingProduct.sizes || []
       };
 
       const { error } = await supabase
@@ -311,8 +332,7 @@ export const AdminPanel: React.FC = () => {
         .eq('id', editingProduct.id);
 
       if (error) throw error;
-      
-      alert('Producto actualizado exitosamente (imágenes anteriores conservadas en Cloudinary)');
+      alert('Producto actualizado exitosamente');
       setEditingProduct(null);
       setEditingImageUrls([]);
       loadData();
@@ -418,9 +438,8 @@ export const AdminPanel: React.FC = () => {
                 onChange={(e) => setNewCategory({ ...newCategory, gender: e.target.value as Gender })}
                 className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
               >
-                <option value="women">Mujer</option>
-                <option value="men">Hombre</option>
-                <option value="cold_weather">Ropa de Frío</option>
+                <option value="women">Personajes Favoritos</option>
+                <option value="men">Poleras de Anime</option>
               </select>
               <button
                 type="submit"
@@ -435,7 +454,7 @@ export const AdminPanel: React.FC = () => {
                 <li key={category.id} className="py-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                   <div>
                     <span className="block sm:inline">{category.name}</span>
-                    <span className="block sm:inline sm:ml-2 text-sm text-gray-500 capitalize">({category.gender})</span>
+               
                   </div>
                   <button
                     onClick={() => deleteCategory(category.id)}
@@ -519,6 +538,24 @@ export const AdminPanel: React.FC = () => {
                 />
               )}
 
+              {/* Agregar después del ImageUploader y antes de los selects */}
+              
+              <ColorManager
+                colors={editingProduct?.colors || newProduct.colors || []}
+                onColorsChange={(colors) => editingProduct
+                  ? setEditingProduct({ ...editingProduct, colors })
+                  : setNewProduct({ ...newProduct, colors })
+                }
+              />
+
+              <SizeManager
+                sizes={editingProduct?.sizes || newProduct.sizes || []}
+                onSizesChange={(sizes) => editingProduct
+                  ? setEditingProduct({ ...editingProduct, sizes })
+                  : setNewProduct({ ...newProduct, sizes })
+                }
+              />
+
               <div className="grid grid-cols-2 gap-4">
                 <select
                   value={editingProduct?.category_id || newProduct.category_id}
@@ -530,7 +567,7 @@ export const AdminPanel: React.FC = () => {
                 >
                   <option value="">seleccione Categoria</option>
                   {categories.map(category => (
-                    <option key={category.id} value={category.id}>{category.name} ({category.gender})</option>
+                    <option key={category.id} value={category.id}>{category.name}</option>
                   ))}
                 </select>
                 <select
@@ -541,9 +578,8 @@ export const AdminPanel: React.FC = () => {
                   }
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
                 >
-                  <option value="women">Mujer</option>
-                  <option value="men">Hombre</option>
-                  <option value="cold_weather">Ropa de Frío</option>
+                  <option value="women">Personajes Favoritos</option>
+                  <option value="men">Poleras de Anime</option>
                 </select>
               </div>
               <div className="flex justify-end gap-4">
@@ -624,7 +660,8 @@ export const AdminPanel: React.FC = () => {
               Sube una imagen para cada sección. Las imágenes se guardarán en la carpeta products.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {(['women', 'men', 'cold_weather'] as Gender[]).map((gender) => (
+              {/* Añadir 'main_banner' a la lista de imágenes a gestionar */}
+              {(['main_banner', 'women', 'men'] as (Gender | 'main_banner')[]).map((gender) => (
                 <SectionImageComponent
                   key={gender}
                   gender={gender}
@@ -634,16 +671,7 @@ export const AdminPanel: React.FC = () => {
               ))}
             </div>
             
-            {/* Información adicional */}
-            <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
-              <h3 className="font-medium text-yellow-800 mb-2">Importante:</h3>
-              <ul className="text-sm text-yellow-700 space-y-1">
-                <li>• Las imágenes se guardan localmente en tu navegador</li>
-                <li>• Todas las imágenes se almacenan en la carpeta products</li>
-                <li>• Si limpias los datos del navegador, las imágenes se perderán</li>
-                <li>• Para uso en producción, considera usar un servicio de almacenamiento en la nube</li>
-              </ul>
-            </div>
+           
           </section>
         )}
       </div>
