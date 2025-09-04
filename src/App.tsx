@@ -18,6 +18,7 @@ const FavoritesView = ({
   onGoBack,
   footerContent,
 }) => {
+  const navigate = useNavigate(); // Añadir useNavigate aquí
   const favoriteItems = products.filter(item => favorites.includes(item.id));
   const [isInfoOpen, setIsInfoOpen] = useState(false);
 
@@ -92,13 +93,16 @@ const FavoritesView = ({
         <h1 className="text-xl font-medium mb-6 text-center">Mis Favoritos</h1>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {favoriteItems.map(item => (
-            <Link key={item.id} to={`/product/${item.id}`} className="block">
-              <ProductCard
-                item={item}
-                isFavorite={true}
-                onToggleFavorite={toggleFavorite}
-              />
-            </Link>
+            <ProductCard
+              key={item.id}
+              item={item}
+              isFavorite={true}
+              onToggleFavorite={(e, productId) => {
+                e.stopPropagation();
+                toggleFavorite(productId);
+              }}
+              onClick={() => navigate(`/product/${item.id}`)}
+            />
           ))}
         </div>
       </div>
@@ -266,13 +270,16 @@ const MainPage = ({
               <main className="flex-1">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
                   {filteredItems.map(item => (
-                    <Link key={item.id} to={`/product/${item.id}`} className="block">
-                      <ProductCard
-                        item={item}
-                        isFavorite={favorites.includes(item.id)}
-                        onToggleFavorite={toggleFavorite}
-                      />
-                    </Link>
+                    <ProductCard
+                      key={item.id}
+                      item={item}
+                      isFavorite={favorites.includes(item.id)}
+                      onToggleFavorite={(e, productId) => {
+                        e.stopPropagation();
+                        toggleFavorite(productId);
+                      }}
+                      onClick={() => navigate(`/product/${item.id}`)}
+                    />
                   ))}
                 </div>
               </main>
@@ -303,7 +310,7 @@ const MainPage = ({
                 src="/Esther.PNG"
                 alt="Esther Logo"
                 className={`transition-all duration-300 ${
-                  isScrolled ? 'h-16' : 'h-28'
+                  isScrolled ? 'h-16' : 'h-2'
                 }`}
               />
             </div>
@@ -392,7 +399,7 @@ export default function App() {
               products={products}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
-              setSelectedItem={setSelectedItem}
+              footerContent={footerContent}
             />
           } />
           <Route path="/admin" element={<AdminPanel />} />

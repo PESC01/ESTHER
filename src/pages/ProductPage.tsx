@@ -8,8 +8,8 @@ import SiteHeader from '../components/SiteHeader';
 
 interface Props {
   products: ClothingItem[];
-  favorites: string[];
-  toggleFavorite: (e: React.MouseEvent, id: string) => void;
+  favorites: number[]; // Cambiado de string[] a number[]
+  toggleFavorite: (productId: number) => void; // Cambiado para no recibir el evento
   footerContent: string;
 }
 
@@ -443,7 +443,10 @@ export const ProductPage: React.FC<Props> = ({ products, favorites, toggleFavori
                   {/* Acciones */}
                   <div className="flex gap-2 items-center">
                     <button
-                      onClick={(e) => toggleFavorite(e as unknown as React.MouseEvent, item.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavorite(item.id);
+                      }}
                       className={`px-3 py-2 rounded-md border ${isFavorite ? 'bg-pink-100 border-pink-300' : 'bg-white border-gray-200'}`}
                       aria-label={isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}
                     >

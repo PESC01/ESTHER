@@ -5,7 +5,7 @@ import { Heart } from 'lucide-react';
 
 interface ProductCardProps {
   item: ClothingItem;
-  onClick?: (item: ClothingItem) => void; // Hacer onClick opcional
+  onClick?: (item: ClothingItem) => void;
   isFavorite: boolean;
   onToggleFavorite: (e: React.MouseEvent, productId: string) => void;
 }
@@ -32,7 +32,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, isFavor
   const imageUrl = useImageUrl(getDisplayImageUrl(item));
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+    e.stopPropagation(); // Detiene la propagación del evento al contenedor
+    e.preventDefault(); // Previene cualquier comportamiento por defecto
     onToggleFavorite(e, item.id);
   };
 
