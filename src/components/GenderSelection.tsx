@@ -179,7 +179,7 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
           <img
             src={mainBannerUrl}
             alt="Portada Principal"
-            className="absolute inset-0 w-full h-full object-cover object-center"
+            className="absolute inset-0 w-full h-full object-cover object-left"
             onLoad={() => handleImageLoad('main_banner')}
           />
         )}
