@@ -173,8 +173,8 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           {/* Columna de información */}
           <div className="p-4 sm:p-6 flex flex-col justify-between">
             <div>
-              <h2 className="text-xl sm:text-2xl font-medium mb-2">{item.name}</h2>
-              <p className="text-xl sm:text-2xl mb-3 sm:mb-4">{item.price.toFixed(2)} Bs</p>
+              <h2 className="text-xl sm:text-2xl font-display font-medium mb-2">{item.name}</h2>
+              <p className="text-xl sm:text-2xl mb-3 sm:mb-4 font-numbers">{item.price.toFixed(2)} Bs</p>
               <p className="text-gray-600 mb-4 sm:mb-6">{item.description}</p>
 
               {/* Selector de colores */}

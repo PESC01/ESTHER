@@ -77,7 +77,7 @@ const FavoritesView = ({
                       <IconX className="w-5 h-5" />
                     </button>
                     <h3 className="text-lg font-medium mb-2 text-left">Información</h3>
-                    <div className="prose prose-sm max-h-60 overflow-y-auto text-left text-gray-700 whitespace-pre-wrap"
+                    <div className="prose prose-sm max-h-60 overflow-y-auto text-left text-gray-700 whitespace-pre-wrap font-numbers"
                       dangerouslySetInnerHTML={{ __html: footerContent || '<p>No hay información disponible.</p>' }}
                     />
                   </div>
@@ -239,7 +239,7 @@ const MainPage = ({
                           <IconX className="w-5 h-5" />
                         </button>
                         <h3 className="text-lg font-medium mb-2 text-left">Información</h3>
-                        <div className="prose prose-sm max-h-60 overflow-y-auto text-left text-gray-700 whitespace-pre-wrap"
+                        <div className="prose prose-sm max-h-60 overflow-y-auto text-left text-gray-700 whitespace-pre-wrap font-numbers"
                           dangerouslySetInnerHTML={{ __html: footerContent || '<p>No hay información disponible.</p>' }}
                         />
                       </div>
@@ -252,7 +252,7 @@ const MainPage = ({
                   >
                     <Heart className="w-6 h-6" />
                     {favorites.length > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                      <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-numbers">
                         {favorites.length}
                       </span>
                     )}

@@ -42,7 +42,7 @@ const ProductRow: React.FC<ProductRowProps> = ({ product, categories, setEditing
         </div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">{product.name}</td>
-      <td className="px-6 py-4 whitespace-nowrap">${product.price.toFixed(2)}</td>
+      <td className="px-6 py-4 whitespace-nowrap font-numbers">${product.price.toFixed(2)}</td>
       <td className="px-6 py-4 whitespace-nowrap">
         {categories.find(c => c.id === product.category_id)?.name}
       </td>
@@ -550,7 +550,7 @@ export const AdminPanel: React.FC = () => {
                       setNewProduct({ ...newProduct, price: value });
                     }
                   }}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black font-numbers"
                 />
               </div>
               <textarea
@@ -745,7 +745,7 @@ export const AdminPanel: React.FC = () => {
                       <textarea
                         value={editingInfo.content}
                         onChange={(e) => setEditingInfo({ ...editingInfo, content: e.target.value })}
-                        className="px-3 py-2 border rounded"
+                        className="px-3 py-2 border rounded font-numbers"
                         rows={5}
                       />
                       <div className="flex gap-2 justify-end">
@@ -757,7 +757,7 @@ export const AdminPanel: React.FC = () => {
                     // Vista de la información
                     <div className="border rounded p-3">
                       <div className="flex justify-between items-start gap-4">
-                        <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: info.content || '<i>Vacío</i>' }} />
+                        <div className="prose max-w-none font-numbers" dangerouslySetInnerHTML={{ __html: info.content || '<i>Vacío</i>' }} />
                         <div className="flex flex-col gap-2">
                           <button onClick={() => setEditingInfo(info)} className="px-3 py-1 bg-yellow-100 rounded">Editar</button>
                           <button onClick={() => deleteSiteInfo(info.key)} className="px-3 py-1 bg-red-100 rounded">Eliminar</button>
@@ -775,7 +775,7 @@ export const AdminPanel: React.FC = () => {
                   placeholder="Contenido (HTML permitido)"
                   value={newInfoContent}
                   onChange={(e) => setNewInfoContent(e.target.value)}
-                  className="px-3 py-2 border rounded"
+                  className="px-3 py-2 border rounded font-numbers"
                   rows={5}
                 />
                 <div className="flex justify-end">

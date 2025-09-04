@@ -7,7 +7,11 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['CocogooseProTrial', 'sans-serif'],
+        // Cambiar la fuente principal para evitar que afecte números
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['CocogooseProTrial', 'sans-serif'], // Solo para títulos
+        numbers: ['Inter', 'Arial', 'sans-serif'], // Para números
+        heading: ['CocogooseProTrial', 'sans-serif'], // Para encabezados
       },
     },
   },

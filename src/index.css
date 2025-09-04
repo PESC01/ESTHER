@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'CocogooseProTrial';
-  src: url('/fonts/CocogooseProTrial-Bold.otf') format('opentype');
+  src: url('/fonts/Cocogoose-Pro-Bold-trial.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
 }
@@ -9,7 +9,23 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
   .font-script {
     font-family: 'Cursive', sans-serif;
+  }
+}
+
+@layer components {
+  .font-numbers {
+    font-family: 'Inter', 'Arial', sans-serif !important;
+    font-feature-settings: "tnum" 1; /* Números tabulares */
+  }
+  
+  .price-text {
+    font-family: 'Inter', 'Arial', sans-serif !important;
+    font-weight: 600;
   }
 }

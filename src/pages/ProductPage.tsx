@@ -320,7 +320,7 @@ export const ProductPage: React.FC<Props> = ({ products, favorites, toggleFavori
                 {/* Info principal del producto */}
                 <div className="flex-grow mt-4 md:mt-0">
                   <h1 className="text-2xl font-medium mb-2">{item.name}</h1>
-                  <p className="text-xl mb-4">{item.price.toFixed(2)} Bs</p>
+                  <p className="text-xl mb-4 font-numbers">{item.price.toFixed(2)} Bs</p>
                   <p className="text-gray-600 mb-4">{item.description}</p>
 
                   {/* Selector de colores (visible solo en desktop) */}

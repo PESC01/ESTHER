@@ -62,7 +62,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, isFavor
       </div>
       <div className="mt-2 space-y-0.5">
         <h3 className="text-sm md:text-base font-medium truncate">{item.name}</h3>
-        <p className="text-sm md:text-base font-semibold">{item.price.toFixed(2)} Bs</p>
+        <p className="text-gray-900 font-medium font-numbers">{item.price.toFixed(2)} Bs</p>
       </div>
     </div>
   );
