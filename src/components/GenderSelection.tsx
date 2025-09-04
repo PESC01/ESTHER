@@ -174,7 +174,7 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
       )}
 
       {/* Sección de Portada Principal */}
-      <section className="h-[60vh] md:h-screen relative flex flex-col items-center justify-end text-black bg-white pb-4">
+      <section className="h-[55vh] md:h-screen relative flex flex-col items-center justify-end text-black bg-white pb-2">
         {mainBannerUrl && (
           <img
             src={mainBannerUrl}
