@@ -4,10 +4,10 @@ import { ProductCard } from './components/ProductCard';
 import { ProductModal } from './components/ProductModal';
 import { AdminLogin } from './components/AdminLogin';
 import { AdminPanel } from './components/AdminPanel';
-import { Menu, Heart, ArrowLeft } from 'lucide-react';
+import { Menu, Heart, ArrowLeft, Info, X as IconX } from 'lucide-react';
 import { supabase } from './lib/supabase';
 import { ClothingItem, Gender, Category } from './types';
-import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import ProductPage from './pages/ProductPage';
 
 // Componente para la vista de favoritos
@@ -15,11 +15,11 @@ const FavoritesView = ({
   favorites,
   products,
   toggleFavorite,
-  setSelectedItem,
-  selectedItem,
-  onGoBack
+  onGoBack,
+  footerContent,
 }) => {
   const favoriteItems = products.filter(item => favorites.includes(item.id));
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
 
   if (favoriteItems.length === 0) {
     return (
@@ -44,7 +44,7 @@ const FavoritesView = ({
       <header className="sticky top-0 z-40 bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="w-10 flex items-center justify-start">
+            <div className="w-auto flex items-center justify-start">
               <button
                 onClick={onGoBack}
                 className="p-2 hover:bg-gray-100 rounded-md"
@@ -58,11 +58,31 @@ const FavoritesView = ({
                 <img src="/Esther.PNG" alt="Esther Logo" className="h-12 mx-auto" />
               </Link>
             </div>
-            <div className="w-10 flex items-center justify-end">
-              {/* Espaciador invisible para un centrado perfecto */}
-              <div className="p-2" aria-hidden="true">
-                <div className="w-6 h-6"></div>
-              </div>
+            <div className="w-auto flex items-center justify-end relative">
+              <button
+                onClick={() => setIsInfoOpen(!isInfoOpen)}
+                className="relative px-3 py-2 text-sm font-bold text-gray-700 hover:bg-gray-100 rounded-md"
+                aria-label="Ver información"
+              >
+                Información
+              </button>
+              {isInfoOpen && (
+                <div className="absolute top-full right-0 mt-2 w-screen max-w-md md:max-w-lg rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                  <div className="p-4 relative">
+                    <button
+                      onClick={() => setIsInfoOpen(false)}
+                      className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+                      aria-label="Cerrar"
+                    >
+                      <IconX className="w-5 h-5" />
+                    </button>
+                    <h3 className="text-lg font-medium mb-2 text-left">Información</h3>
+                    <div className="prose prose-sm max-h-60 overflow-y-auto text-left text-gray-700 whitespace-pre-wrap"
+                      dangerouslySetInnerHTML={{ __html: footerContent || '<p>No hay información disponible.</p>' }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -72,22 +92,15 @@ const FavoritesView = ({
         <h1 className="text-xl font-medium mb-6 text-center">Mis Favoritos</h1>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {favoriteItems.map(item => (
-            <ProductCard
-              key={item.id}
-              item={item}
-              onClick={setSelectedItem}
-              isFavorite={true}
-              onToggleFavorite={toggleFavorite}
-            />
+            <Link key={item.id} to={`/product/${item.id}`} className="block">
+              <ProductCard
+                item={item}
+                isFavorite={true}
+                onToggleFavorite={toggleFavorite}
+              />
+            </Link>
           ))}
         </div>
-
-        {selectedItem && (
-          <ProductModal
-            item={selectedItem}
-            onClose={() => setSelectedItem(null)}
-          />
-        )}
       </div>
     </div>
   );
@@ -100,13 +113,18 @@ const MainPage = ({
   setSelectedItem,
   selectedItem,
   isAdmin,
+  footerContent,
+  selectedGender,
+  setSelectedGender,
+  viewingFavorites,
+  setViewingFavorites,
 }) => {
   const location = useLocation();
-  const [selectedGender, setSelectedGender] = useState<Gender | null>(null);
+  const navigate = useNavigate(); // Importante: añadir useNavigate
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [viewingFavorites, setViewingFavorites] = useState(false);
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -118,15 +136,14 @@ const MainPage = ({
   }, []);
 
   useEffect(() => {
-    if (location.state?.showFavorites) {
-      // Necesitamos un género seleccionado para que la vista de favoritos funcione
-      // así que establecemos uno por defecto si no hay ninguno.
+    const searchParams = new URLSearchParams(location.search);
+    if (searchParams.get('view') === 'favorites') {
       if (!selectedGender) {
         setSelectedGender('women');
       }
       setViewingFavorites(true);
     }
-  }, [location.state, selectedGender]);
+  }, [location.search, selectedGender, setSelectedGender, setViewingFavorites]);
 
   const filteredCategories = products
     .filter(p => p.gender === selectedGender)
@@ -152,13 +169,12 @@ const MainPage = ({
         favorites={favorites}
         products={products}
         toggleFavorite={toggleFavorite}
-        setSelectedItem={setSelectedItem}
-        selectedItem={selectedItem}
         onGoBack={() => {
           setViewingFavorites(false);
-          // Opcional: volver a la selección de género si el usuario lo prefiere
-          // setSelectedGender(null);
+          // Limpiamos el parámetro de la URL para que no se reactive
+          navigate('/', { replace: true });
         }}
+        footerContent={footerContent}
       />
     );
   }
@@ -186,6 +202,7 @@ const MainPage = ({
                         onClick={() => {
                           setSelectedGender(selectedGender === 'women' ? 'men' : 'women');
                           setIsMenuOpen(false); // Cierra el menú al cambiar de sección
+                          setViewingFavorites(false); // <-- Añade esta línea
                         }}
                         className="w-full text-left flex items-center gap-2 px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100 hover:text-black transition-colors"
                       >
@@ -203,7 +220,31 @@ const MainPage = ({
                 </div>
 
                 {/* Contenedor derecho con ancho fijo para equilibrar */}
-                <div className="w-16 flex items-center justify-end">
+                <div className="w-auto flex items-center justify-end space-x-2">
+                  <button
+                    onClick={() => setIsInfoOpen(!isInfoOpen)}
+                    className="relative px-3 py-2 text-sm font-bold text-gray-700 hover:bg-gray-100 rounded-md"
+                    aria-label="Ver información"
+                  >
+                    Información
+                  </button>
+                  {isInfoOpen && (
+                    <div className="absolute top-full right-0 mt-2 w-screen max-w-md md:max-w-lg rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                      <div className="p-4 relative">
+                        <button
+                          onClick={() => setIsInfoOpen(false)}
+                          className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+                          aria-label="Cerrar"
+                        >
+                          <IconX className="w-5 h-5" />
+                        </button>
+                        <h3 className="text-lg font-medium mb-2 text-left">Información</h3>
+                        <div className="prose prose-sm max-h-60 overflow-y-auto text-left text-gray-700 whitespace-pre-wrap"
+                          dangerouslySetInnerHTML={{ __html: footerContent || '<p>No hay información disponible.</p>' }}
+                        />
+                      </div>
+                    </div>
+                  )}
                   <button
                     onClick={() => setViewingFavorites(true)}
                     className="relative p-2 hover:bg-gray-100 rounded-md"
@@ -262,7 +303,7 @@ const MainPage = ({
                 src="/Esther.PNG"
                 alt="Esther Logo"
                 className={`transition-all duration-300 ${
-                  isScrolled ? 'h-12' : 'h-32'
+                  isScrolled ? 'h-12' : 'h-60'
                 }`}
               />
             </div>
@@ -272,10 +313,13 @@ const MainPage = ({
       )}
     </div>
   );
-};
+}
 
 
 function App() {
+  // Contenido administrable del sitio (footer)
+  const [footerContent, setFooterContent] = useState<string>('');
+  const [isFooterModalOpen, setIsFooterModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<ClothingItem | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -286,10 +330,13 @@ function App() {
     const savedFavorites = localStorage.getItem('favorites');
     return savedFavorites ? JSON.parse(savedFavorites) : [];
   });
+  const [selectedGender, setSelectedGender] = useState<Gender | null>(null);
+  const [viewingFavorites, setViewingFavorites] = useState(false);
 
   useEffect(() => {
     checkUser();
     loadData();
+    loadFooterInfo();
   }, []);
 
   // Guardar favoritos en localStorage cuando cambian
@@ -318,6 +365,23 @@ function App() {
     }
   };
 
+  const loadFooterInfo = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('site_info')
+        .select('content')
+        .eq('key', 'footer')
+        .maybeSingle();
+
+      if (error) throw error;
+      if (data) {
+        setFooterContent((data as any).content || '');
+      }
+    } catch (err) {
+      console.error('Error cargando footer:', err);
+    }
+  };
+
   // Función para alternar favoritos
   const toggleFavorite = (e: React.MouseEvent, productId: string) => {
     // Detener la propagación para que no se abra el modal o se active el Link
@@ -343,6 +407,8 @@ function App() {
 
   return (
     <BrowserRouter>
+      {/* Barra superior con la información administrable (ahora visible en el header) */}
+      
       <Routes>
         <Route path="/" element={
           <MainPage
@@ -352,6 +418,11 @@ function App() {
             setSelectedItem={setSelectedItem}
             selectedItem={selectedItem}
             isAdmin={isAdmin}
+            footerContent={footerContent}
+            selectedGender={selectedGender}
+            setSelectedGender={setSelectedGender}
+            viewingFavorites={viewingFavorites}
+            setViewingFavorites={setViewingFavorites}
           />
         } />
         <Route path="/admin" element={isAdmin ? <AdminPanel /> : <AdminLogin onLogin={() => setIsAdmin(true)} />} />
@@ -362,10 +433,13 @@ function App() {
               products={products}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
+              footerContent={footerContent}
             />
           }
         />
       </Routes>
+      {/* Botón fijo y modal de información administrable */}
+      
     </BrowserRouter>
   );
 }

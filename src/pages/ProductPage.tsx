@@ -3,13 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ClothingItem, Color, Size } from '../types';
 import { supabase } from '../lib/supabase';
 import { useImageUrl } from '../lib/imageUtils';
-import { Phone, Heart, X, ArrowLeft } from 'lucide-react';
+import { Phone, Heart, X as IconX, ArrowLeft } from 'lucide-react';
 import SiteHeader from '../components/SiteHeader';
 
 interface Props {
   products: ClothingItem[];
   favorites: string[];
   toggleFavorite: (e: React.MouseEvent, id: string) => void;
+  footerContent: string;
 }
 
 const Thumbnail: React.FC<{ url: string; onClick: () => void; active: boolean; alt: string }> = ({ url, onClick, active, alt }) => {
@@ -30,11 +31,12 @@ const Thumbnail: React.FC<{ url: string; onClick: () => void; active: boolean; a
   );
 };
 
-export const ProductPage: React.FC<Props> = ({ products, favorites, toggleFavorite }) => {
+export const ProductPage: React.FC<Props> = ({ products, favorites, toggleFavorite, footerContent }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [item, setItem] = useState<ClothingItem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
 
   // Estados similares al modal
   const [mainIndex, setMainIndex] = useState(0);
@@ -167,7 +169,7 @@ export const ProductPage: React.FC<Props> = ({ products, favorites, toggleFavori
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Botón de volver a la izquierda */}
-            <div className="w-10 flex items-center justify-start">
+            <div className="w-auto flex items-center justify-start">
               <button
                 onClick={() => navigate(-1)}
                 className="p-2 hover:bg-gray-100 rounded-md"
@@ -185,9 +187,33 @@ export const ProductPage: React.FC<Props> = ({ products, favorites, toggleFavori
             </div>
 
             {/* Contenedor derecho con ancho fijo para equilibrar el centro */}
-            <div className="w-10 flex items-center justify-end">
+            <div className="w-auto flex items-center justify-end space-x-2 relative">
+               <button
+                onClick={() => setIsInfoOpen(!isInfoOpen)}
+                className="relative px-3 py-2 text-sm font-bold text-gray-700 hover:bg-gray-100 rounded-md"
+                aria-label="Ver información"
+              >
+                Información
+              </button>
+              {isInfoOpen && (
+                <div className="absolute top-full right-0 mt-2 w-screen max-w-md md:max-w-lg rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                  <div className="p-4 relative">
+                    <button
+                      onClick={() => setIsInfoOpen(false)}
+                      className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+                      aria-label="Cerrar"
+                    >
+                      <IconX className="w-5 h-5" />
+                    </button>
+                    <h3 className="text-lg font-medium mb-2 text-left">Información</h3>
+                    <div className="prose prose-sm max-h-60 overflow-y-auto text-left text-gray-700 whitespace-pre-wrap"
+                      dangerouslySetInnerHTML={{ __html: footerContent || '<p>No hay información disponible.</p>' }}
+                    />
+                  </div>
+                </div>
+              )}
               <button
-                onClick={() => navigate('/', { state: { showFavorites: true } })}
+                onClick={() => navigate('/?view=favorites')}
                 className="relative p-2 hover:bg-gray-100 rounded-md"
                 aria-label="Ver favoritos"
               >

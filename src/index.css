@@ -1,3 +1,9 @@
+@font-face {
+  font-family: 'CocogooseProTrial';
+  src: url('/fonts/CocogooseProTrial-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

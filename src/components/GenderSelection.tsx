@@ -179,21 +179,20 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
           <img
             src={mainBannerUrl}
             alt="Portada Principal"
-            className="absolute inset-0 w-full h-full object-cover object-top"
+            className="absolute inset-0 w-full h-full object-cover object-center"
             onLoad={() => handleImageLoad('main_banner')}
           />
         )}
         
         <button
           onClick={handleScrollDown}
-          className="absolute bottom-10 z-10 flex flex-col items-center text-white animate-bounce bg-black bg-opacity-50 rounded-full px-4 py-2"
+          className="absolute bottom-10 z-10 bg-white text-black px-6 py-3 rounded-md shadow-lg"
         >
-          <span className="text-lg font-light tracking-wider">MIRA LO NUEVO</span>
-          <ArrowDown className="w-8 h-8 mt-1" />
+          <span className="text-lg font-medium tracking-wider uppercase">Explora las novedades</span>
         </button>
       </section>
 
-      {/* Sección de Categorías */}
+      {/* Contenido principal que se revela al hacer scroll */}
       <section ref={categoriesRef} className="py-16 bg-white">
         <div className="max-w-5xl mx-auto sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -207,7 +206,7 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
                   <img
                     src={womenImageUrl}
                     alt="Sección Personajes Favoritos"
-                    className="w-full h-full object-contain transition-transform duration-500 ease-in-out group-hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
                     onLoad={() => handleImageLoad('women')}
                   />
                 )}
@@ -225,7 +224,7 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
                   <img
                     src={menImageUrl}
                     alt="Sección Poleras de Anime"
-                    className="w-full h-full object-contain transition-transform duration-500 ease-in-out group-hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
                     onLoad={() => handleImageLoad('men')}
                   />
                 )}

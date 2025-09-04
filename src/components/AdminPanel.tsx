@@ -100,7 +100,8 @@ export const AdminPanel: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<ClothingItem[]>([]);
   const [sectionImages, setSectionImages] = useState<SectionImage[]>([]);
-  const [activeTab, setActiveTab] = useState<'categories' | 'products' | 'sections'>('categories');
+  const [siteInfos, setSiteInfos] = useState<{ id: string; key: string; content: string }[]>([]);
+  const [activeTab, setActiveTab] = useState<'categories' | 'products' | 'sections' | 'info'>('categories');
   const [newCategory, setNewCategory] = useState({ name: '', gender: 'women' as Gender });
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Partial<ClothingItem> | null>(null);
@@ -124,6 +125,8 @@ export const AdminPanel: React.FC = () => {
   const [newImageUrls, setNewImageUrls] = useState<string[]>([]);
   // Estado local para manejar las URLs de las imágenes del producto en edición
   const [editingImageUrls, setEditingImageUrls] = useState<string[]>([]);
+  const [editingInfo, setEditingInfo] = useState<{ key: string; content: string } | null>(null);
+  const [newInfoContent, setNewInfoContent] = useState<string>('');
 
   useEffect(() => {
     loadData();
@@ -144,11 +147,13 @@ export const AdminPanel: React.FC = () => {
       const [
         { data: categoriesData },
         { data: productsData },
-        { data: sectionImagesData }
+        { data: sectionImagesData },
+        { data: siteInfosData }
       ] = await Promise.all([
         supabase.from('categories').select('*').order('name'),
         supabase.from('products').select('*').order('name'),
-        supabase.from('section_images').select('*')
+        supabase.from('section_images').select('*'),
+        supabase.from('site_info').select('*')
       ]);
 
       // Asegúrate de que image_urls sea un array en todos los productos
@@ -160,6 +165,7 @@ export const AdminPanel: React.FC = () => {
       setCategories(categoriesData || []);
       setProducts(productsWithImageUrls);
       setSectionImages(sectionImagesData || []);
+      setSiteInfos(siteInfosData || []);
 
     } catch (error) {
       console.error('Error loading data:', error);
@@ -378,6 +384,48 @@ export const AdminPanel: React.FC = () => {
     setEditingImageUrls(updatedImageUrls);
   };
 
+  // ----- CRUD para site_info -----
+  const addSiteInfo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newInfoContent.trim()) return alert('El contenido no puede estar vacío.');
+    try {
+      const { error } = await supabase.from('site_info').insert([{ key: 'footer', content: newInfoContent.trim() }]);
+      if (error) throw error;
+      setNewInfoContent('');
+      loadData();
+    } catch (err) {
+      console.error('Error creando site_info:', err);
+      alert('Error creando la información');
+    }
+  };
+
+  const updateSiteInfo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingInfo?.key) return;
+    try {
+      const { error } = await supabase.from('site_info').update({ key: editingInfo.key, content: editingInfo.content }).eq('key', editingInfo.key);
+      if (error) throw error;
+      setEditingInfo(null);
+      loadData();
+    } catch (err) {
+      console.error('Error actualizando site_info:', err);
+      alert('Error actualizando la información');
+    }
+  };
+
+  const deleteSiteInfo = async (key: string) => {
+    if (!confirm('¿Eliminar esta entrada de información?')) return;
+    try {
+      const { error } = await supabase.from('site_info').delete().eq('key', key);
+      if (error) throw error;
+      loadData();
+    } catch (err) {
+      console.error('Error eliminando site_info:', err);
+      alert('Error eliminando la información');
+    }
+  };
+  // ----- fin CRUD site_info -----
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -419,6 +467,12 @@ export const AdminPanel: React.FC = () => {
             className={`px-4 py-2 ${activeTab === 'sections' ? 'border-b-2 border-black' : ''}`}
           >
             Selección de imagenes
+          </button>
+          <button
+            onClick={() => setActiveTab('info')}
+            className={`px-4 py-2 ${activeTab === 'info' ? 'border-b-2 border-black' : ''}`}
+          >
+            Información
           </button>
         </div>
 
@@ -640,7 +694,7 @@ export const AdminPanel: React.FC = () => {
                   {products.map((product, index) => (
                     // Usar el nuevo componente ProductRow aquí
                     <ProductRow
-                      key={product.id}
+                      key={product.id ?? `product-${index}`}
                       product={product}
                       categories={categories}
                       setEditingProduct={setEditingProduct}
@@ -672,6 +726,63 @@ export const AdminPanel: React.FC = () => {
             </div>
             
            
+          </section>
+        )}
+
+        {activeTab === 'info' && (
+          <section className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-medium mb-4">Información del Sitio</h2>
+            <p className="text-gray-600 mb-4">Aquí puedes gestionar la información de contacto y otros detalles que se mostrarán en la tienda.</p>
+
+            {siteInfos.find(info => info.key === 'footer') ? (
+              // Si la información ya existe, mostrarla con opciones de edición/eliminación
+              siteInfos.filter(info => info.key === 'footer').map(info => (
+                <div key={info.key}>
+                  {editingInfo && editingInfo.key === info.key ? (
+                    // Formulario de edición
+                    <form onSubmit={updateSiteInfo} className="grid gap-2">
+                      <h3 className="text-lg mb-2">Editar Información</h3>
+                      <textarea
+                        value={editingInfo.content}
+                        onChange={(e) => setEditingInfo({ ...editingInfo, content: e.target.value })}
+                        className="px-3 py-2 border rounded"
+                        rows={5}
+                      />
+                      <div className="flex gap-2 justify-end">
+                        <button type="button" onClick={() => setEditingInfo(null)} className="px-4 py-2 border rounded">Cancelar</button>
+                        <button type="submit" className="px-4 py-2 bg-black text-white rounded">Guardar</button>
+                      </div>
+                    </form>
+                  ) : (
+                    // Vista de la información
+                    <div className="border rounded p-3">
+                      <div className="flex justify-between items-start gap-4">
+                        <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: info.content || '<i>Vacío</i>' }} />
+                        <div className="flex flex-col gap-2">
+                          <button onClick={() => setEditingInfo(info)} className="px-3 py-1 bg-yellow-100 rounded">Editar</button>
+                          <button onClick={() => deleteSiteInfo(info.key)} className="px-3 py-1 bg-red-100 rounded">Eliminar</button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              // Si no existe información, mostrar el formulario de creación
+              <form onSubmit={addSiteInfo} className="mb-4 grid gap-2">
+                <h3 className="text-lg mb-2">Crear Información del Sitio</h3>
+                <textarea
+                  placeholder="Contenido (HTML permitido)"
+                  value={newInfoContent}
+                  onChange={(e) => setNewInfoContent(e.target.value)}
+                  className="px-3 py-2 border rounded"
+                  rows={5}
+                />
+                <div className="flex justify-end">
+                  <button type="submit" className="px-4 py-2 bg-black text-white rounded">Crear</button>
+                </div>
+              </form>
+            )}
           </section>
         )}
       </div>
