@@ -306,7 +306,7 @@ const MainPage = ({
             <img
               src="/Esther.PNG"
               alt="Esther Logo"
-              className="h-24 md:h-48 transition-all duration-500"
+              className="h-28 md:h-48 transition-all duration-500"
               style={{ filter: 'drop-shadow(0 2px 16px rgba(0,0,0,0.12))' }}
             />
           </div>
