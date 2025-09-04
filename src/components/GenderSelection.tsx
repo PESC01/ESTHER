@@ -185,16 +185,20 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
           />
         )}
         
-        <button
-          onClick={handleScrollDown}
-          className="relative z-10 bg-white text-black px-6 py-3 rounded-md shadow-lg mt-auto mb-4"
-        >
-          <span className="text-lg font-medium tracking-wider uppercase">Explora las novedades</span>
-        </button>
+        <div className="relative z-10 mt-auto w-full">
+          <div className="flex justify-center">
+            <button
+              onClick={handleScrollDown}
+              className="bg-white text-black px-6 py-3 rounded-md shadow-lg"
+            >
+              <span className="text-lg font-medium tracking-wider uppercase">Explora las novedades</span>
+            </button>
+          </div>
+        </div>
       </section>
 
       {/* Contenido principal que se revela al hacer scroll */}
-      <section ref={categoriesRef} className="py-1 md:py-8 bg-white">
+      <section ref={categoriesRef} className="pt-4 pb-8 md:py-8 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {/* Personajes Favoritos */}
