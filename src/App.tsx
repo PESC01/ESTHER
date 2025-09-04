@@ -310,7 +310,7 @@ const MainPage = ({
                 src="/Esther.PNG"
                 alt="Esther Logo"
                 className={`transition-all duration-300 ${
-                  isScrolled ? 'h-16' : 'h-2'
+                  isScrolled ? 'h-16' : 'h-28'
                 }`}
               />
             </div>
