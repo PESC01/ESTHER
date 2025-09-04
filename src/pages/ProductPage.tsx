@@ -200,7 +200,7 @@ export const ProductPage: React.FC<Props> = ({ products, favorites, toggleFavori
             {/* Contenedor central que centra el logo */}
             <div className="flex-grow text-center">
               <button onClick={() => navigate('/')} aria-label="Inicio">
-                <img src="/Esther.PNG" alt="Esther Logo" className="h-16 mx-auto" />
+                <img src="/Esther.PNG" alt="Esther Logo" className="h-24 mx-auto" />
               </button>
             </div>
 
