@@ -174,29 +174,29 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
       )}
 
       {/* Sección de Portada Principal */}
-      <section className="h-screen relative flex flex-col items-center justify-center text-white bg-gray-900">
-          {mainBannerUrl && (
+      <section className="h-[60vh] md:h-screen relative flex flex-col items-center justify-center text-black bg-white">
+        {mainBannerUrl && (
           <img
             src={mainBannerUrl}
             alt="Portada Principal"
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ objectPosition: '8% center' }}
+            className="absolute inset-0 w-full h-full object-contain md:object-cover"
+            style={{ objectPosition: 'center center' }}
             onLoad={() => handleImageLoad('main_banner')}
           />
         )}
         
         <button
           onClick={handleScrollDown}
-          className="absolute bottom-10 z-10 bg-white text-black px-6 py-3 rounded-md shadow-lg"
+          className="relative z-10 bg-white text-black px-6 py-3 rounded-md shadow-lg mt-auto mb-4"
         >
           <span className="text-lg font-medium tracking-wider uppercase">Explora las novedades</span>
         </button>
       </section>
 
       {/* Contenido principal que se revela al hacer scroll */}
-      <section ref={categoriesRef} className="py-16 bg-white">
-        <div className="max-w-5xl mx-auto sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <section ref={categoriesRef} className="py-1 md:py-8 bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {/* Personajes Favoritos */}
             <div
               className="cursor-pointer group"
@@ -212,7 +212,7 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
                   />
                 )}
               </div>
-              <h2 className="text-2xl text-center mt-4 font-light tracking-wider">PERSONAJES FAVORITOS</h2>
+              <h2 className="text-lg md:text-xl text-center mt-2 md:mt-3 font-light tracking-wider">PERSONAJES FAVORITOS</h2>
             </div>
 
             {/* Poleras de Anime */}
@@ -230,11 +230,56 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
                   />
                 )}
               </div>
-              <h2 className="text-2xl text-center mt-4 font-light tracking-wider">POLERAS DE ANIME</h2>
+              <h2 className="text-lg md:text-xl text-center mt-2 md:mt-3 font-light tracking-wider">POLERAS DE ANIME</h2>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Sección de Cold Weather - Solo visible en desktop con hover */}
+      {showColdWeather && (
+        <section className="hidden md:block absolute inset-0 z-30 bg-black bg-opacity-50">
+          <div className="h-full flex items-center justify-center">
+            <div
+              className="cursor-pointer group max-w-md mx-4"
+              onClick={() => handleSelect('cold_weather')}
+            >
+              <div className="overflow-hidden aspect-square bg-gray-100 rounded-lg shadow-2xl">
+                {coldWeatherImageUrl && (
+                  <img
+                    src={coldWeatherImageUrl}
+                    alt="Sección Ropa de Abrigo"
+                    className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
+                    onLoad={() => handleImageLoad('cold_weather')}
+                  />
+                )}
+              </div>
+              <h2 className="text-xl text-center mt-4 font-light tracking-wider text-white">ROPA DE ABRIGO</h2>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Navegación lateral para Cold Weather en desktop */}
+      <div className="hidden md:flex fixed left-4 top-1/2 transform -translate-y-1/2 z-40 flex-col space-y-4">
+        <button
+          onMouseEnter={() => setShowColdWeather(true)}
+          onMouseLeave={() => setShowColdWeather(false)}
+          className="bg-white bg-opacity-20 hover:bg-opacity-40 text-white p-2 rounded-full transition-all duration-300"
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </button>
+      </div>
+
+      <div className="hidden md:flex fixed right-4 top-1/2 transform -translate-y-1/2 z-40 flex-col space-y-4">
+        <button
+          onMouseEnter={() => setShowColdWeather(true)}
+          onMouseLeave={() => setShowColdWeather(false)}
+          className="bg-white bg-opacity-20 hover:bg-opacity-40 text-white p-2 rounded-full transition-all duration-300"
+        >
+          <ChevronRight className="w-6 h-6" />
+        </button>
+      </div>
     </div>
   );
 };

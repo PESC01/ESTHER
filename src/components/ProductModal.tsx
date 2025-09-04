@@ -13,11 +13,20 @@ interface ProductModalProps {
 // Componente para renderizar cada miniatura
 const Thumbnail: React.FC<{ url: string; onClick: () => void; active: boolean; alt: string }> = ({ url, onClick, active, alt }) => {
   const thumbUrl = useImageUrl(url);
+  const preventImageActions = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  };
+
   return (
     <img
       src={thumbUrl}
       alt={alt}
-      className={`h-12 w-12 sm:h-16 sm:w-16 object-cover cursor-pointer rounded ${active ? 'border-2 border-black' : 'opacity-75 hover:opacity-100'}`}
+      className="w-full h-full object-cover pointer-events-none select-none"
+      draggable={false}
+      onContextMenu={preventImageActions}
+      onDragStart={preventImageActions}
       onClick={onClick}
     />
   );
@@ -145,7 +154,8 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                   <img
                     src={mainImageUrl}
                     alt={item.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover pointer-events-none select-none"
+                    draggable={false}
                   />
                 </div>
                 {/* Miniaturas - Solo mostrar si hay más de una imagen */}

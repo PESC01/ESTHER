@@ -36,6 +36,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, isFavor
     onToggleFavorite(e, item.id);
   };
 
+  const preventImageActions = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  };
+
   return (
     <div
       className="group cursor-pointer flex flex-col relative"
@@ -57,7 +63,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, isFavor
         <img
           src={imageUrl}
           alt={item.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-cover pointer-events-none select-none"
+          draggable={false}
+          onContextMenu={preventImageActions}
+          onDragStart={preventImageActions}
         />
       </div>
       <div className="mt-2 space-y-0.5">

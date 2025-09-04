@@ -296,152 +296,108 @@ const MainPage = ({
           >
             <div
               className={`flex items-center justify-center mx-auto transition-all duration-300 ${
-                isScrolled ? 'h-16' : 'h-80'
+                isScrolled ? 'h-16' : 'h-16 md:h-20'
               }`}
             >
               <img
                 src="/Esther.PNG"
                 alt="Esther Logo"
                 className={`transition-all duration-300 ${
-                  isScrolled ? 'h-12' : 'h-60'
+                  isScrolled ? 'h-12' : 'h-14 md:h-16'
                 }`}
               />
             </div>
           </header>
-          <GenderSelection onSelect={setSelectedGender} />
+          
+          <GenderSelection onSelect={(gender) => setSelectedGender(gender)} />
         </>
       )}
     </div>
   );
-}
+};
 
-
-function App() {
-  // Contenido administrable del sitio (footer)
-  const [footerContent, setFooterContent] = useState<string>('');
-  const [isFooterModalOpen, setIsFooterModalOpen] = useState(false);
+export default function App() {
+  const [products, setProducts] = useState<ClothingItem[]>([]);
+  const [favorites, setFavorites] = useState<number[]>([]);
   const [selectedItem, setSelectedItem] = useState<ClothingItem | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [products, setProducts] = useState<ClothingItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  // Estado para almacenar los IDs de productos favoritos
-  const [favorites, setFavorites] = useState<string[]>(() => {
-    const savedFavorites = localStorage.getItem('favorites');
-    return savedFavorites ? JSON.parse(savedFavorites) : [];
-  });
+  const [footerContent, setFooterContent] = useState<string | null>(null);
   const [selectedGender, setSelectedGender] = useState<Gender | null>(null);
   const [viewingFavorites, setViewingFavorites] = useState(false);
 
   useEffect(() => {
-    checkUser();
-    loadData();
-    loadFooterInfo();
+    const fetchData = async () => {
+      const productResponse = await supabase.from('products').select('*');
+      setProducts(productResponse.data as ClothingItem[]);
+
+      const { data: favoritesData } = await supabase
+        .from('favorites')
+        .select('product_id')
+        .eq('user_id', supabase.auth.user()?.id);
+
+      setFavorites(favoritesData?.map(fav => fav.product_id) || []);
+
+      const { data: footerData } = await supabase
+        .from('footer')
+        .select('content')
+        .single();
+
+      setFooterContent(footerData?.content || null);
+    };
+
+    fetchData();
   }, []);
 
-  // Guardar favoritos en localStorage cuando cambian
-  useEffect(() => {
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-  }, [favorites]);
+  const toggleFavorite = async (productId: number) => {
+    const isFavorite = favorites.includes(productId);
 
-  const checkUser = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    setIsAdmin(!!session);
-  };
-
-  const loadData = async () => {
-    try {
-      const [{ data: categoriesData }, { data: productsData }] = await Promise.all([
-        supabase.from('categories').select('*').order('name'),
-        supabase.from('products').select('*').order('name')
-      ]);
-
-      setCategories(categoriesData || []);
-      setProducts(productsData || []);
-    } catch (error) {
-      console.error('Error loading data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadFooterInfo = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('site_info')
-        .select('content')
-        .eq('key', 'footer')
-        .maybeSingle();
-
-      if (error) throw error;
-      if (data) {
-        setFooterContent((data as any).content || '');
-      }
-    } catch (err) {
-      console.error('Error cargando footer:', err);
-    }
-  };
-
-  // Función para alternar favoritos
-  const toggleFavorite = (e: React.MouseEvent, productId: string) => {
-    // Detener la propagación para que no se abra el modal o se active el Link
-    e.preventDefault();
-    e.stopPropagation();
-
-    setFavorites(prevFavorites => {
-      if (prevFavorites.includes(productId)) {
-        return prevFavorites.filter(id => id !== productId);
-      } else {
-        return [...prevFavorites, productId];
-      }
-    });
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Loading...</p>
-      </div>
+    setFavorites(prev =>
+      isFavorite ? prev.filter(id => id !== productId) : [...prev, productId]
     );
-  }
+
+    if (isFavorite) {
+      await supabase
+        .from('favorites')
+        .delete()
+        .eq('user_id', supabase.auth.user()?.id)
+        .eq('product_id', productId);
+    } else {
+      await supabase
+        .from('favorites')
+        .insert([{ user_id: supabase.auth.user()?.id, product_id: productId }]);
+    }
+  };
 
   return (
     <BrowserRouter>
-      {/* Barra superior con la información administrable (ahora visible en el header) */}
-      
-      <Routes>
-        <Route path="/" element={
-          <MainPage
-            products={products}
-            favorites={favorites}
-            toggleFavorite={toggleFavorite}
-            setSelectedItem={setSelectedItem}
-            selectedItem={selectedItem}
-            isAdmin={isAdmin}
-            footerContent={footerContent}
-            selectedGender={selectedGender}
-            setSelectedGender={setSelectedGender}
-            viewingFavorites={viewingFavorites}
-            setViewingFavorites={setViewingFavorites}
-          />
-        } />
-        <Route path="/admin" element={isAdmin ? <AdminPanel /> : <AdminLogin onLogin={() => setIsAdmin(true)} />} />
-        <Route
-          path="/product/:id"
-          element={
+      <div className="font-sans antialiased">
+        <Routes>
+          <Route path="/" element={
+            <MainPage
+              products={products}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+              setSelectedItem={setSelectedItem}
+              selectedItem={selectedItem}
+              isAdmin={isAdmin}
+              footerContent={footerContent}
+              selectedGender={selectedGender}
+              setSelectedGender={setSelectedGender}
+              viewingFavorites={viewingFavorites}
+              setViewingFavorites={setViewingFavorites}
+            />
+          } />
+          <Route path="/product/:id" element={
             <ProductPage
               products={products}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
-              footerContent={footerContent}
+              setSelectedItem={setSelectedItem}
             />
-          }
-        />
-      </Routes>
-      {/* Botón fijo y modal de información administrable */}
-      
+          } />
+          <Route path="/admin" element={<AdminPanel />} />
+        </Routes>
+      </div>
     </BrowserRouter>
   );
 }
-
-export default App;

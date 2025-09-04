@@ -13,6 +13,13 @@ interface Props {
   footerContent: string;
 }
 
+// Función para prevenir descarga de imágenes
+const preventImageActions = (e: React.MouseEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
+  return false;
+};
+
 const Thumbnail: React.FC<{ url: string; onClick: () => void; active: boolean; alt: string }> = ({ url, onClick, active, alt }) => {
   const thumbUrl = useImageUrl(url || '');
   return (
@@ -26,7 +33,14 @@ const Thumbnail: React.FC<{ url: string; onClick: () => void; active: boolean; a
       style={{ width: 56, height: 56 }}
       title={alt}
     >
-      <img src={thumbUrl} alt={alt} className="w-full h-full object-cover" />
+      <img 
+        src={thumbUrl} 
+        alt={alt} 
+        className="w-full h-full object-cover pointer-events-none select-none" 
+        draggable={false}
+        onContextMenu={preventImageActions}
+        onDragStart={preventImageActions}
+      />
     </button>
   );
 };
@@ -245,9 +259,12 @@ export const ProductPage: React.FC<Props> = ({ products, favorites, toggleFavori
                       id="product-main-image" 
                       src={mainImageUrl} 
                       alt={item.name} 
-                      className={`absolute inset-0 w-full h-full object-contain cursor-zoom-in transition-transform duration-200 ${isZoomed ? 'cursor-zoom-out' : ''}`}
+                      className={`absolute inset-0 w-full h-full object-contain cursor-zoom-in transition-transform duration-200 pointer-events-none select-none ${isZoomed ? 'cursor-zoom-out' : ''}`}
                       style={{ transform: `scale(${zoomLevel})` }}
                       tabIndex={-1}
+                      draggable={false}
+                      onContextMenu={preventImageActions}
+                      onDragStart={preventImageActions}
                       onClick={() => {
                         if (isZoomed) {
                           setIsZoomed(false);
