@@ -175,11 +175,12 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
 
       {/* Sección de Portada Principal */}
       <section className="h-screen relative flex flex-col items-center justify-center text-white bg-gray-900">
-        {mainBannerUrl && (
+          {mainBannerUrl && (
           <img
             src={mainBannerUrl}
             alt="Portada Principal"
-            className="absolute inset-0 w-full h-full object-cover object-left"
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ objectPosition: '8% center' }}
             onLoad={() => handleImageLoad('main_banner')}
           />
         )}

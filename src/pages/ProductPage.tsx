@@ -42,6 +42,10 @@ export const ProductPage: React.FC<Props> = ({ products, favorites, toggleFavori
   const [mainIndex, setMainIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState<Color | null>(null);
   const [selectedSize, setSelectedSize] = useState<Size | null>(null);
+  
+  // Estados para el zoom
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   // Nueva lógica para mostrar TODAS las imágenes en las miniaturas
   const allThumbnails = React.useMemo(() => {
@@ -229,15 +233,71 @@ export const ProductPage: React.FC<Props> = ({ products, favorites, toggleFavori
         </div>
       </header>
 
-      <div className="px-4 py-8">
+      <div className="px-4">
         <div className="bg-white rounded-lg shadow p-4 md:p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
             {/* Columna de imágenes (ocupa toda la fila en móvil) */}
             <div className="flex flex-col gap-2 sm:gap-4 md:col-span-1">
               {displayImages.length > 0 ? (
                 <>
-                  <div className="relative w-full h-96 bg-gray-100">
-                    <img id="product-main-image" src={mainImageUrl} alt={item.name} className="absolute inset-0 w-full h-full object-contain" tabIndex={-1} />
+                  <div className="relative w-full h-[350px] md:h-[450px] overflow-hidden border rounded-lg">
+                    <img 
+                      id="product-main-image" 
+                      src={mainImageUrl} 
+                      alt={item.name} 
+                      className={`absolute inset-0 w-full h-full object-contain cursor-zoom-in transition-transform duration-200 ${isZoomed ? 'cursor-zoom-out' : ''}`}
+                      style={{ transform: `scale(${zoomLevel})` }}
+                      tabIndex={-1}
+                      onClick={() => {
+                        if (isZoomed) {
+                          setIsZoomed(false);
+                          setZoomLevel(1);
+                        } else {
+                          setIsZoomed(true);
+                          setZoomLevel(2);
+                        }
+                      }}
+                    />
+                    
+                    {/* Controles de zoom */}
+                    <div className="absolute bottom-2 right-2 flex flex-col gap-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setZoomLevel(prev => Math.min(prev + 0.5, 3));
+                          setIsZoomed(true);
+                        }}
+                        className="bg-black/70 text-white p-1 rounded text-xs hover:bg-black/90"
+                        aria-label="Acercar"
+                      >
+                        +
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const newZoom = Math.max(zoomLevel - 0.5, 1);
+                          setZoomLevel(newZoom);
+                          if (newZoom === 1) setIsZoomed(false);
+                        }}
+                        className="bg-black/70 text-white p-1 rounded text-xs hover:bg-black/90"
+                        aria-label="Alejar"
+                      >
+                        -
+                      </button>
+                      {isZoomed && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setZoomLevel(1);
+                            setIsZoomed(false);
+                          }}
+                          className="bg-black/70 text-white p-1 rounded text-xs hover:bg-black/90"
+                          aria-label="Reset zoom"
+                        >
+                          1:1
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   {allThumbnails.length > 1 && (
@@ -345,7 +405,7 @@ export const ProductPage: React.FC<Props> = ({ products, favorites, toggleFavori
 
                   {/* Selector de tallas */}
                   {item.sizes && item.sizes.length > 0 && (
-                    <div className="mb-4">
+                    <div className="mb-6">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Talla: {selectedSize?.name || 'Selecciona una talla'}
                       </label>
@@ -362,22 +422,22 @@ export const ProductPage: React.FC<Props> = ({ products, favorites, toggleFavori
                       </div>
                     </div>
                   )}
-                </div>
 
-                {/* Acciones */}
-                <div className="flex gap-2 items-center mt-4">
-                  <button
-                    onClick={(e) => toggleFavorite(e as unknown as React.MouseEvent, item.id)}
-                    className={`px-3 py-2 rounded-md border ${isFavorite ? 'bg-pink-100 border-pink-300' : 'bg-white border-gray-200'}`}
-                    aria-label={isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}
-                  >
-                    <Heart className={`w-4 h-4 ${isFavorite ? 'text-pink-500' : 'text-gray-700'}`} />
-                  </button>
+                  {/* Acciones */}
+                  <div className="flex gap-2 items-center">
+                    <button
+                      onClick={(e) => toggleFavorite(e as unknown as React.MouseEvent, item.id)}
+                      className={`px-3 py-2 rounded-md border ${isFavorite ? 'bg-pink-100 border-pink-300' : 'bg-white border-gray-200'}`}
+                      aria-label={isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}
+                    >
+                      <Heart className={`w-4 h-4 ${isFavorite ? 'text-pink-500' : 'text-gray-700'}`} />
+                    </button>
 
-                  <a href={whatsappLink} target="_blank" rel="noreferrer" className="ml-auto inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-md">
-                    <Phone className="w-4 h-4" />
-                    Realizar Pedido
-                  </a>
+                    <a href={whatsappLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-md">
+                      <Phone className="w-4 h-4" />
+                      Realizar Pedido
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
