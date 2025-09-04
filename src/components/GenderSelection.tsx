@@ -174,7 +174,7 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
       )}
 
       {/* Sección de Portada Principal */}
-      <section className="h-[60vh] md:h-screen relative flex flex-col items-center justify-center text-black bg-white">
+      <section className="h-[60vh] md:h-screen relative flex flex-col items-center justify-end text-black bg-white pb-4">
         {mainBannerUrl && (
           <img
             src={mainBannerUrl}
@@ -185,7 +185,7 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
           />
         )}
         
-        <div className="relative z-10 mt-auto w-full">
+        <div className="relative z-10 w-full">
           <div className="flex justify-center">
             <button
               onClick={handleScrollDown}
@@ -198,7 +198,7 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
       </section>
 
       {/* Contenido principal que se revela al hacer scroll */}
-      <section ref={categoriesRef} className="pt-4 pb-8 md:py-8 bg-white">
+      <section ref={categoriesRef} className="bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {/* Personajes Favoritos */}
