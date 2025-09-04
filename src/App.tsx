@@ -296,26 +296,26 @@ const MainPage = ({
         </div>
       ) : (
         <>
-                    <header
+          {/* Header solo aparece al hacer scroll, igual que en PC */}
+          <header
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
               isScrolled ? 'bg-white shadow-md' : 'bg-transparent'
             }`}
           >
             <div
               className={`flex items-center justify-center mx-auto transition-all duration-300 ${
-                isScrolled ? 'h-16' : 'h-32'
+                isScrolled ? 'h-16' : 'h-0'
               }`}
             >
               <img
                 src="/Esther.PNG"
                 alt="Esther Logo"
                 className={`transition-all duration-300 ${
-                  isScrolled ? 'h-16' : 'h-28'
+                  isScrolled ? 'h-16' : 'h-0'
                 }`}
               />
             </div>
           </header>
-          
           <GenderSelection onSelect={(gender) => setSelectedGender(gender)} />
         </>
       )}

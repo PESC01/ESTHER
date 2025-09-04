@@ -174,28 +174,25 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
       )}
 
       {/* Sección de Portada Principal */}
-      <section className="h-[52vh] md:h-screen relative flex flex-col items-center justify-end text-black bg-white pb-2">
+      <section className="relative w-full">
         {mainBannerUrl && (
           <img
             src={mainBannerUrl}
             alt="Portada Principal"
-            className="absolute inset-0 w-full h-full object-contain md:object-cover"
-            style={{ objectPosition: 'center center' }}
+            className="w-full object-contain md:object-cover"
+            style={{ objectPosition: 'center top', maxHeight: '52vh' }}
             onLoad={() => handleImageLoad('main_banner')}
           />
         )}
-        
-        <div className="relative z-10 w-full">
-          <div className="flex justify-center">
-            <button
-              onClick={handleScrollDown}
-              className="bg-white text-black px-6 py-3 rounded-md shadow-lg"
-            >
-              <span className="text-lg font-medium tracking-wider uppercase">Explora las novedades</span>
-            </button>
-          </div>
-        </div>
       </section>
+      <div className="w-full flex justify-center bg-white">
+        <button
+          onClick={handleScrollDown}
+          className="bg-white text-black px-6 py-3 rounded-md shadow-lg"
+        >
+          <span className="text-lg font-medium tracking-wider uppercase">Explora las novedades</span>
+        </button>
+      </div>
 
       {/* Contenido principal que se revela al hacer scroll */}
       <section ref={categoriesRef} className="bg-white">

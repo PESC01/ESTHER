@@ -346,13 +346,7 @@ export const ProductPage: React.FC<Props> = ({ products, favorites, toggleFavori
                                 setMainIndex(newMainIndex);
                               }
 
-                              // desplazar ligeramente el contenedor para que la miniatura seleccionada quede visible
-                              try {
-                                const btn = document.querySelector(`button[title="${item.name} miniatura ${index + 1}"]`);
-                                if (btn && (btn as HTMLElement).scrollIntoView) {
-                                  (btn as HTMLElement).scrollIntoView({ behavior: 'smooth', inline: 'center' });
-                                }
-                              } catch {}
+                             
                               // Opcional: mover foco al main image para accesibilidad
                               const mainImg = document.getElementById('product-main-image');
                               if (mainImg) (mainImg as HTMLElement).focus();
