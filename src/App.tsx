@@ -55,7 +55,7 @@ const FavoritesView = ({
             </div>
             <div className="flex-grow text-center">
               <Link to="/" className="inline-flex justify-center items-center">
-                <img src="/Esther.PNG" alt="Esther Logo" className="h-12 mx-auto" />
+                <img src="/Esther.PNG" alt="Esther Logo" className="h-16 mx-auto" />
               </Link>
             </div>
             <div className="w-auto flex items-center justify-end relative">
@@ -215,7 +215,7 @@ const MainPage = ({
                 {/* Contenedor central que centra el logo */}
                 <div className="flex-grow text-center">
                   <button onClick={() => setSelectedGender(null)}>
-                    <img src="/Esther.PNG" alt="Esther Logo" className="h-12 mx-auto" />
+                    <img src="/Esther.PNG" alt="Esther Logo" className="h-16 mx-auto" />
                   </button>
                 </div>
 
@@ -289,21 +289,21 @@ const MainPage = ({
         </div>
       ) : (
         <>
-          <header
+                    <header
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
               isScrolled ? 'bg-white shadow-md' : 'bg-transparent'
             }`}
           >
             <div
               className={`flex items-center justify-center mx-auto transition-all duration-300 ${
-                isScrolled ? 'h-16' : 'h-16 md:h-20'
+                isScrolled ? 'h-16' : 'h-32'
               }`}
             >
               <img
                 src="/Esther.PNG"
                 alt="Esther Logo"
                 className={`transition-all duration-300 ${
-                  isScrolled ? 'h-12' : 'h-14 md:h-16'
+                  isScrolled ? 'h-16' : 'h-28'
                 }`}
               />
             </div>
