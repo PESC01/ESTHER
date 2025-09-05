@@ -5,6 +5,8 @@ import { supabase } from '../lib/supabase';
 import { useImageUrl } from '../lib/imageUtils';
 import { Phone, Heart, X as IconX, ArrowLeft } from 'lucide-react';
 import SiteHeader from '../components/SiteHeader';
+import { ProtectedImage } from '../components/ProtectedImage';
+import { initImageProtection, preventImageActions } from '../lib/imageProtection';
 
 interface Props {
   products: ClothingItem[];
@@ -155,6 +157,11 @@ export const ProductPage: React.FC<Props> = ({ products, favorites, toggleFavori
     })();
   }, [id, products]);
 
+  // Inicializar protecciones al montar el componente
+  useEffect(() => {
+    initImageProtection();
+  }, []);
+
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
   }
@@ -256,21 +263,16 @@ export const ProductPage: React.FC<Props> = ({ products, favorites, toggleFavori
       <div className="px-4">
         <div className="bg-white rounded-lg shadow p-4 md:p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
-            {/* Columna de imágenes (ocupa toda la fila en móvil) */}
+            {/* Columna de imágenes */}
             <div className="flex flex-col gap-2 sm:gap-4 md:col-span-1">
               {displayImages.length > 0 ? (
                 <>
                   <div className="relative w-full h-[350px] md:h-[450px] overflow-hidden border rounded-lg">
-                    <img 
-                      id="product-main-image" 
-                      src={mainImageUrl} 
-                      alt={item.name} 
-                      className={`absolute inset-0 w-full h-full object-contain cursor-zoom-in transition-transform duration-200 pointer-events-none select-none ${isZoomed ? 'cursor-zoom-out' : ''}`}
+                    <ProtectedImage
+                      src={mainImageUrl}
+                      alt={item.name}
+                      className={`absolute inset-0 w-full h-full object-contain cursor-zoom-in transition-transform duration-200 ${isZoomed ? 'cursor-zoom-out' : ''}`}
                       style={{ transform: `scale(${zoomLevel})` }}
-                      tabIndex={-1}
-                      draggable={false}
-                      onContextMenu={preventImageActions}
-                      onDragStart={preventImageActions}
                       onClick={() => {
                         if (isZoomed) {
                           setIsZoomed(false);
@@ -323,42 +325,49 @@ export const ProductPage: React.FC<Props> = ({ products, favorites, toggleFavori
                     </div>
                   </div>
 
+                  {/* Miniaturas con protección */}
                   {allThumbnails.length > 1 && (
                     <div className="mt-3">
-                      <div
-                        className="flex gap-3 items-center overflow-x-auto pb-2"
-                        role="list"
-                        aria-label="Miniaturas del producto"
-                      >
-                        {allThumbnails.map((url, index) => (
-                          <Thumbnail
-                            key={`thumb-${index}`}
-                            url={url}
-                            alt={`${item.name} miniatura ${index + 1}`}
-                            active={url === displayImages[mainIndex]}
-                            onClick={() => {
-                              // Lógica para actualizar la imagen principal al hacer clic en una miniatura
-                              const colorOfClickedImage = item.colors?.find(c => c.image_urls?.includes(url));
-                              
-                              if (colorOfClickedImage) {
-                                // Si la imagen pertenece a un color, selecciona ese color
-                                setSelectedColor(colorOfClickedImage);
-                                const newMainIndex = colorOfClickedImage.image_urls?.indexOf(url) ?? 0;
-                                setMainIndex(newMainIndex);
-                              } else {
-                                // Si es una imagen general, quita la selección de color
-                                setSelectedColor(null);
-                                const newMainIndex = item.image_urls?.indexOf(url) ?? 0;
-                                setMainIndex(newMainIndex);
-                              }
+                      <div className="flex gap-3 items-center overflow-x-auto pb-2">
+                        {allThumbnails.map((url, index) => {
+                          const thumbUrl = useImageUrl(url || '');
+                          return (
+                            <button
+                              key={`thumb-${index}`}
+                              onClick={() => {
+                                // Lógica para actualizar la imagen principal al hacer clic en una miniatura
+                                const colorOfClickedImage = item.colors?.find(c => c.image_urls?.includes(url));
+                                
+                                if (colorOfClickedImage) {
+                                  // Si la imagen pertenece a un color, selecciona ese color
+                                  setSelectedColor(colorOfClickedImage);
+                                  const newMainIndex = colorOfClickedImage.image_urls?.indexOf(url) ?? 0;
+                                  setMainIndex(newMainIndex);
+                                } else {
+                                  // Si es una imagen general, quita la selección de color
+                                  setSelectedColor(null);
+                                  const newMainIndex = item.image_urls?.indexOf(url) ?? 0;
+                                  setMainIndex(newMainIndex);
+                                }
 
-                             
-                              // Opcional: mover foco al main image para accesibilidad
-                              const mainImg = document.getElementById('product-main-image');
-                              if (mainImg) (mainImg as HTMLElement).focus();
-                            }}
-                          />
-                        ))}
+                               
+                                // Opcional: mover foco al main image para accesibilidad
+                                const mainImg = document.getElementById('product-main-image');
+                                if (mainImg) (mainImg as HTMLElement).focus();
+                              }}
+                              className={`flex-shrink-0 rounded overflow-hidden focus:outline-none transition-transform duration-150 ease-out transform ${
+                                url === displayImages[mainIndex] ? 'scale-105 ring-2 ring-black shadow-md' : 'opacity-80 hover:scale-105'
+                              }`}
+                              style={{ width: 56, height: 56 }}
+                            >
+                              <ProtectedImage
+                                src={thumbUrl}
+                                alt={`${item.name} miniatura ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
