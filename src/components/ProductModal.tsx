@@ -117,7 +117,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     return encodeURIComponent(message);
   };
 
-  const whatsappLink = `https://wa.me/74534873?text=${getOrderMessage()}`;
+  const whatsappLink = `https://wa.me/59167385426?text=${getOrderMessage()}`;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50 overflow-y-auto">

@@ -179,7 +179,7 @@ export const ProductPage: React.FC<Props> = ({ products, favorites, toggleFavori
     message += ' Gracias!';
     return encodeURIComponent(message);
   };
-  const whatsappLink = `https://wa.me/74534873?text=${getOrderMessage()}`;
+  const whatsappLink = `https://wa.me/59167385426?text=${getOrderMessage()}`;
 
   return (
     <div>
@@ -224,8 +224,14 @@ export const ProductPage: React.FC<Props> = ({ products, favorites, toggleFavori
                       <IconX className="w-5 h-5" />
                     </button>
                     <h3 className="text-lg font-medium mb-2 text-left">Información</h3>
-                    <div className="prose prose-sm max-h-60 overflow-y-auto text-left text-gray-700 whitespace-pre-wrap"
-                      dangerouslySetInnerHTML={{ __html: footerContent || '<p>No hay información disponible.</p>' }}
+                    <div 
+                      className="prose prose-sm max-h-60 overflow-y-auto text-left text-gray-700 whitespace-pre-wrap"
+                      dangerouslySetInnerHTML={{ 
+                        __html: footerContent ? footerContent.replace(
+                          /https:\/\/[^\s]+/g, 
+                          (url) => `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: underline;">${url}</a>`
+                        ) : '<p>No hay información disponible.</p>' 
+                      }}
                     />
                   </div>
                 </div>
