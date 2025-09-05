@@ -220,7 +220,7 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
                   />
                 )}
               </div>
-              <h2 className="text-lg md:text-xl text-center mt-2 md:mt-3 font-light tracking-wider">PERSONAJES FAVORITOS</h2>
+              <h2 className="text-lg md:text-xl text-center mt-2 md:mt-3 font-light tracking-wider">Poleras de tu personaje favorito</h2>
             </div>
 
             {/* Poleras de Anime */}
@@ -238,7 +238,7 @@ export const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) =>
                   />
                 )}
               </div>
-              <h2 className="text-lg md:text-xl text-center mt-2 md:mt-3 font-light tracking-wider">POLERAS DE ANIME</h2>
+              <h2 className="text-lg md:text-xl text-center mt-2 md:mt-3 font-light tracking-wider">Poleras de anime</h2>
             </div>
           </div>
         </div>
