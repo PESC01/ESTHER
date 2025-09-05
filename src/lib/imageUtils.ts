@@ -35,7 +35,7 @@ export const useImageUrl = (imagePath: string): string => {
 
     // Si ya es una URL completa (Cloudinary), usarla directamente
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-      console.log('URL de Cloudinary detectada:', imagePath);
+      
       setImageUrl(imagePath);
       return;
     }

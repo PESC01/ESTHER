@@ -351,42 +351,30 @@ export default function App() {
       const productResponse = await supabase.from('products').select('*');
       setProducts(productResponse.data as ClothingItem[]);
 
-      const { data: favoritesData } = await supabase
-        .from('favorites')
-        .select('product_id')
-        .eq('user_id', supabase.auth.user()?.id);
+      // Cargar favoritos desde localStorage
+      const storedFavorites = localStorage.getItem('favorites');
+      setFavorites(storedFavorites ? JSON.parse(storedFavorites) : []);
 
-      setFavorites(favoritesData?.map(fav => fav.product_id) || []);
-
-      const { data: footerData } = await supabase
-        .from('footer')
+      const { data: siteInfoData } = await supabase
+        .from('site_info')
         .select('content')
+        .eq('key', 'footer')
         .single();
 
-      setFooterContent(footerData?.content || null);
+      setFooterContent(siteInfoData?.content || null);
     };
 
     fetchData();
   }, []);
 
-  const toggleFavorite = async (productId: number) => {
+  const toggleFavorite = (productId: number) => {
     const isFavorite = favorites.includes(productId);
+    const updatedFavorites = isFavorite
+      ? favorites.filter(id => id !== productId)
+      : [...favorites, productId];
 
-    setFavorites(prev =>
-      isFavorite ? prev.filter(id => id !== productId) : [...prev, productId]
-    );
-
-    if (isFavorite) {
-      await supabase
-        .from('favorites')
-        .delete()
-        .eq('user_id', supabase.auth.user()?.id)
-        .eq('product_id', productId);
-    } else {
-      await supabase
-        .from('favorites')
-        .insert([{ user_id: supabase.auth.user()?.id, product_id: productId }]);
-    }
+    setFavorites(updatedFavorites);
+    localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
   };
 
   return (
