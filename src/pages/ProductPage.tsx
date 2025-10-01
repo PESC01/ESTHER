@@ -10,17 +10,10 @@ import { initImageProtection, preventImageActions } from '../lib/imageProtection
 
 interface Props {
   products: ClothingItem[];
-  favorites: number[]; // Cambiado de string[] a number[]
-  toggleFavorite: (productId: number) => void; // Cambiado para no recibir el evento
-  footerContent: string;
+  favorites: string[];
+  toggleFavorite: (event: React.MouseEvent, id: string) => void;
+  footerContent: React.ReactNode;
 }
-
-// Función para prevenir descarga de imágenes
-const preventImageActions = (e: React.MouseEvent) => {
-  e.preventDefault();
-  e.stopPropagation();
-  return false;
-};
 
 const Thumbnail: React.FC<{ url: string; onClick: () => void; active: boolean; alt: string }> = ({ url, onClick, active, alt }) => {
   const thumbUrl = useImageUrl(url || '');
