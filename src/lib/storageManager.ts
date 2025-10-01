@@ -34,7 +34,7 @@ export class StorageManager {
     }
     
     keysToRemove.forEach(key => localStorage.removeItem(key));
-    console.log(`${keysToRemove.length} imágenes eliminadas del almacenamiento`);
+   
   }
   
   // Listar todas las imágenes almacenadas (ahora todas están en products/)
@@ -82,7 +82,7 @@ export class StorageManager {
     });
     
     if (keysToMigrate.length > 0) {
-      console.log(`${keysToMigrate.length} imágenes de secciones migradas a la carpeta products`);
+     
     }
   }
 }

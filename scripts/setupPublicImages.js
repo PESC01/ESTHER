@@ -14,7 +14,7 @@ const productsDir = path.join(imagesDir, 'products');
 [publicDir, imagesDir, productsDir].forEach(dir => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
-    console.log(`Directorio creado: ${dir}`);
+  
   }
 });
 
@@ -22,5 +22,3 @@ const productsDir = path.join(imagesDir, 'products');
 const gitkeepPath = path.join(productsDir, '.gitkeep');
 fs.writeFileSync(gitkeepPath, '');
 
-console.log('Estructura de directorios para imágenes públicas creada correctamente');
-console.log('Las imágenes se servirán desde: /images/products/');

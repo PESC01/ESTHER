@@ -14,14 +14,7 @@ export const uploadToCloudinary = async (file: File, folder: string = 'esther'):
   formData.append('upload_preset', cloudinaryConfig.uploadPreset);
   formData.append('folder', folder);
 
-  console.log('Subiendo a Cloudinary:', {
-    cloudName: cloudinaryConfig.cloudName,
-    uploadPreset: cloudinaryConfig.uploadPreset,
-    folder: folder,
-    fileName: file.name,
-    fileSize: file.size,
-    fileType: file.type
-  });
+
 
   try {
     const response = await fetch(
@@ -32,7 +25,7 @@ export const uploadToCloudinary = async (file: File, folder: string = 'esther'):
       }
     );
 
-    console.log('Respuesta de Cloudinary:', response.status, response.statusText);
+    
 
     if (!response.ok) {
       const errorData = await response.text();
@@ -40,7 +33,7 @@ export const uploadToCloudinary = async (file: File, folder: string = 'esther'):
     }
 
     const data = await response.json();
-    console.log('Subida exitosa:', data.secure_url);
+
     
     return data.secure_url;
   } catch (error) {
@@ -64,10 +57,10 @@ export const getPublicIdFromUrl = (url: string): string | null => {
     // Remover la extensión del archivo
     const publicId = pathAfterVersion.replace(/\.[^/.]+$/, '');
     
-    console.log('Public ID extraído:', publicId);
+   
     return publicId;
   } catch (error) {
-    console.error('Error extrayendo public ID:', error);
+
     return null;
   }
 };
@@ -79,7 +72,7 @@ export const deleteFromCloudinary = async (publicId: string): Promise<void> => {
       throw new Error('Public ID es requerido');
     }
 
-    console.log('Eliminando imagen con public ID:', publicId);
+   
 
     // Detectar si estamos en desarrollo o producción
     const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -104,7 +97,7 @@ export const deleteFromCloudinary = async (publicId: string): Promise<void> => {
       body: JSON.stringify({ publicId }),
     });
 
-    console.log('Response status:', response.status);
+
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -120,7 +113,7 @@ export const deleteFromCloudinary = async (publicId: string): Promise<void> => {
     }
 
     const result = await response.json();
-    console.log('Imagen eliminada exitosamente:', result);
+  
 
     if (!result.success) {
       throw new Error(result.error || 'Error desconocido eliminando imagen');

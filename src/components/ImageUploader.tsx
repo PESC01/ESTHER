@@ -58,18 +58,8 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   const handleRemoveImage = async (imageUrl: string) => {
     if (onImageRemove) {
-      // COMENTADO: No eliminar de Cloudinary automáticamente
-      // if (imageUrl && imageUrl.includes('cloudinary.com')) {
-      //   try {
-      //     await fileManager.deleteFile(imageUrl);
-      //     console.log('Imagen eliminada de Cloudinary:', imageUrl);
-      //   } catch (error) {
-      //     console.warn('Error eliminando imagen de Cloudinary:', error);
-      //   }
-      // }
-      
-      // Solo remover de la UI
-      console.log('Imagen removida de la lista (permanece en Cloudinary):', imageUrl);
+ 
+
       onImageRemove(imageUrl);
     }
   };

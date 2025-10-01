@@ -241,7 +241,7 @@ export const AdminPanel: React.FC = () => {
         sizes: newProduct.sizes || []
       };
 
-      console.log('Creando producto:', productToCreate); // Debug
+
 
       const { error } = await supabase
         .from('products')
@@ -304,14 +304,14 @@ export const AdminPanel: React.FC = () => {
           .eq('id', existingImage.id);
 
         if (error) throw error;
-        console.log('Imagen de sección actualizada (imagen anterior conservada en Cloudinary)');
+
       } else {
         const { error } = await supabase
           .from('section_images')
           .insert([{ gender, image_url: imageUrl }]);
 
         if (error) throw error;
-        console.log('Imagen de sección creada');
+
       }
 
       loadData();

@@ -20,7 +20,7 @@ class FileManager {
         const publicId = getPublicIdFromUrl(pathOrUrl);
         if (publicId) {
           await deleteFromCloudinary(publicId);
-          console.log('Imagen eliminada exitosamente de Cloudinary');
+       
         } else {
           throw new Error('No se pudo extraer el public ID de la URL');
         }

@@ -11,8 +11,5 @@ export default defineConfig({
       allow: ['..']
     }
   },
-  assetsInclude: ['**/*.jpg', '**/*.jpeg', '**/*.png', '**/*.gif', '**/*.webp'],
-  esbuild: {
-    drop: ['console', 'debugger'], 
-  },
+  assetsInclude: ['**/*.jpg', '**/*.jpeg', '**/*.png', '**/*.gif', '**/*.webp']
 });

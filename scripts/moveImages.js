@@ -13,9 +13,7 @@ const productsDir = path.join(imagesDir, 'products');
 [imagesDir, productsDir].forEach(dir => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
-    console.log(`Directorio creado: ${dir}`);
+   
   }
 });
 
-console.log('Estructura de directorios para imágenes creada correctamente');
-console.log('Todas las imágenes (productos y secciones) se guardarán en: src/assets/images/products/');

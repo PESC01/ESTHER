@@ -52,18 +52,8 @@ export const SectionImageUploader: React.FC<SectionImageUploaderProps> = ({
 
   const handleRemoveImage = async () => {
     if (currentImage) {
-      // COMENTADO: No eliminar de Cloudinary automáticamente
-      // if (currentImage.includes('cloudinary.com')) {
-      //   try {
-      //     await fileManager.deleteFile(currentImage);
-      //     console.log('Imagen de sección eliminada de Cloudinary:', currentImage);
-      //   } catch (error) {
-      //     console.warn('Error eliminando imagen de sección de Cloudinary:', error);
-      //   }
-      // }
-      
-      // Solo limpiar la imagen de la UI
-      console.log('Imagen de sección removida (permanece en Cloudinary):', currentImage);
+     
+     
       onImageUpload('');
     }
   };

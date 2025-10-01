@@ -32,12 +32,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Public ID is required' });
     }
 
-    console.log('Attempting to delete image with public ID:', publicId);
-    console.log('Cloudinary config:', {
-      cloud_name: process.env.VITE_CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.VITE_CLOUDINARY_API_KEY ? '***' : 'NOT_SET',
-      api_secret: process.env.CLOUDINARY_API_SECRET ? '***' : 'NOT_SET'
-    });
+   
     
     // Verificar que la configuración esté completa
     if (!process.env.VITE_CLOUDINARY_CLOUD_NAME || !process.env.VITE_CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
@@ -47,7 +42,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Eliminar la imagen de Cloudinary
     const result = await cloudinary.uploader.destroy(publicId);
     
-    console.log('Cloudinary delete result:', result);
+
     
     if (result.result === 'ok' || result.result === 'not found') {
       res.json({ 
